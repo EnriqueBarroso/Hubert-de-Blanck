@@ -3,53 +3,53 @@ import Hero from "@/components/Hero";
 import EventCard from "@/components/EventCard";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 
-import event1 from "@/assets/event-1.jpg";
-import event2 from "@/assets/event-2.jpg";
-import event3 from "@/assets/event-3.jpg";
-import venueGroove from "@/assets/venue-groove.jpg";
+import eventMusical from "@/assets/event-musical.jpg";
+import eventContemporary from "@/assets/event-contemporary.jpg";
+import eventWorkshop from "@/assets/event-workshop.jpg";
+import theaterInterior from "@/assets/theater-interior.jpg";
 
 const Index = () => {
   const upcomingEvents = [
     {
-      title: "101 Hip Hop Jam",
-      date: "18 noviembre",
-      image: event1,
-      category: "Jam Session",
-      categoryVariant: "session" as const,
+      title: "La Casa de Bernarda Alba",
+      date: "15-28 Diciembre",
+      image: eventContemporary,
+      category: "Teatro Contemporáneo",
+      categoryVariant: "contemporary" as const,
     },
     {
-      title: "YULIE",
-      date: "18 noviembre",
-      image: event2,
-      category: "Marula Club",
-      categoryVariant: "club" as const,
+      title: "Chicago - El Musical",
+      date: "5-20 Enero",
+      image: eventMusical,
+      category: "Teatro Musical",
+      categoryVariant: "musical" as const,
     },
     {
-      title: "World Groove Session",
-      date: "19 noviembre",
-      image: event3,
-      category: "Jam Session",
-      categoryVariant: "session" as const,
+      title: "Taller de Actuación",
+      date: "Todos los Sábados",
+      image: eventWorkshop,
+      category: "Formación",
+      categoryVariant: "workshop" as const,
     },
   ];
 
   const blogPosts = [
     {
-      title: "Las bandas que comenzaron en salas pequeñas y ahora llenan estadios",
-      image: event1,
-      excerpt: "Descubre la historia de artistas que empezaron en venues íntimos como el nuestro",
+      title: "El teatro como herramienta de transformación social en tiempos modernos",
+      image: eventContemporary,
+      excerpt: "Exploramos cómo el teatro contemporáneo refleja y transforma nuestra realidad",
     },
     {
-      title: "Las mejores salas pequeñas de conciertos en Barcelona para descubrir música nueva",
-      image: event2,
-      excerpt: "Una guía completa de los espacios más auténticos de la ciudad",
+      title: "Detrás del telón: El proceso creativo de nuestras producciones musicales",
+      image: eventMusical,
+      excerpt: "Un vistazo íntimo al trabajo que hay detrás de cada montaje",
     },
     {
-      title: "Por qué los conciertos en salas pequeñas son la mejor forma de disfrutar del funk y el jazz",
-      image: event3,
-      excerpt: "La experiencia íntima que solo un venue pequeño puede ofrecer",
+      title: "La importancia de los espacios teatrales independientes en la cultura actual",
+      image: theaterInterior,
+      excerpt: "Por qué los teatros como el nuestro son esenciales para la diversidad cultural",
     },
   ];
 
@@ -58,11 +58,20 @@ const Index = () => {
       <Navbar />
       <Hero />
 
-      {/* Events Section with Yellow Accent */}
+      {/* Events Section with Emerald Accent */}
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-96 bg-primary -skew-y-12 transform translate-y-32 opacity-100 z-0" />
+        <div className="absolute top-0 right-0 w-1/2 h-96 bg-primary -skew-y-12 transform translate-y-32 opacity-20 z-0" />
         
         <div className="container mx-auto px-4 relative z-10">
+          <div className="mb-12 text-center">
+            <h2 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
+              Próximas Funciones
+            </h2>
+            <p className="font-outfit text-lg text-muted-foreground max-w-2xl mx-auto">
+              Descubre las experiencias teatrales que están transformando nuestra escena
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {upcomingEvents.map((event, index) => (
               <EventCard key={index} {...event} />
@@ -72,44 +81,49 @@ const Index = () => {
           <div className="text-center">
             <Button 
               size="lg"
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-bold rounded-full px-8"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
             >
-              Agenda completa
+              Ver cartelera completa
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
       </section>
 
-      {/* La Sala Section */}
-      <section className="relative py-20 bg-venue-darker overflow-hidden">
-        <div className="absolute bottom-0 left-0 w-1/2 h-96 bg-primary -skew-y-12 transform -translate-y-32 opacity-100 z-0" />
+      {/* La Compañía Section */}
+      <section className="relative py-20 bg-theater-darker overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-1/2 h-96 bg-secondary -skew-y-12 transform -translate-y-32 opacity-20 z-0" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-sm font-medium text-primary mb-4 tracking-widest uppercase">
-                La Sala
+              <p className="font-outfit text-sm font-medium text-primary mb-4 tracking-widest uppercase flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Nuestra Esencia
               </p>
-              <h2 className="text-6xl font-bold text-foreground mb-6 leading-tight">
-                El templo del Groove
+              <h2 className="font-playfair text-6xl font-bold text-foreground mb-6 leading-tight">
+                Un espacio para la vanguardia teatral
               </h2>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Aquí no venimos a contar cuentos, venimos a escribirlos en la pista. Trae tus ganas de quemar suela y déjate 
-                sonidos que te harán sentir. Esto no es sólo una sala. Es tu próxima obsesión.
+              <p className="font-outfit text-lg text-muted-foreground mb-6 leading-relaxed">
+                Somos más que un teatro. Somos un laboratorio de ideas, un refugio para la creatividad 
+                y un puente entre tradición e innovación.
+              </p>
+              <p className="font-outfit text-lg text-muted-foreground mb-8 leading-relaxed">
+                Desde nuestra fundación, hemos creído que el teatro tiene el poder de cuestionar, 
+                inspirar y transformar. Cada producción es una invitación a ver el mundo desde nuevas perspectivas.
               </p>
               <Button 
                 variant="outline"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit"
               >
-                Descubre más
+                Conoce nuestra historia
               </Button>
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-background to-transparent z-10 lg:block hidden" />
               <img
-                src={venueGroove}
-                alt="El templo del Groove"
+                src={theaterInterior}
+                alt="Teatro Hubert de Blanck"
                 className="rounded-lg w-full h-[500px] object-cover"
               />
             </div>
@@ -117,17 +131,17 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Blog Section with Orange Accent */}
+      {/* Blog Section with Copper Accent */}
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute top-0 left-0 w-1/2 h-96 bg-venue-coral -skew-y-12 transform translate-y-32 opacity-100 z-0" />
+        <div className="absolute top-0 left-0 w-1/2 h-96 bg-theater-copper -skew-y-12 transform translate-y-32 opacity-20 z-0" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="mb-12">
-            <h2 className="text-5xl font-bold text-foreground mb-6">
-              Historias desde la pista
+            <h2 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-6">
+              Reflexiones desde el escenario
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl">
-              Relatos, entrevistas y crónicas del mundo de la música en vivo
+            <p className="font-outfit text-lg text-muted-foreground max-w-2xl">
+              Pensamientos, entrevistas y crónicas sobre el arte teatral contemporáneo
             </p>
           </div>
 
@@ -140,9 +154,9 @@ const Index = () => {
           <div className="text-center">
             <Button 
               size="lg"
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-bold rounded-full px-8"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
             >
-              Ver todos los posts
+              Leer más artículos
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -150,46 +164,47 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-venue-darker py-12 border-t border-border">
+      <footer className="bg-theater-darker py-12 border-t border-border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="text-2xl font-bold tracking-wider mb-4">
-                <span className="text-foreground">MAR</span>
-                <span className="text-primary">ULA</span>
+              <div className="font-playfair text-2xl font-bold tracking-wide mb-4">
+                <span className="text-primary">Hubert</span>
+                <span className="text-foreground"> de </span>
+                <span className="text-secondary">Blanck</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                El templo del Groove en Barcelona
+              <p className="font-outfit text-sm text-muted-foreground">
+                Teatro contemporáneo y vanguardista
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-foreground mb-4">Navegación</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h3 className="font-outfit font-bold text-foreground mb-4">Navegación</h3>
+              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
                 <li><a href="#" className="hover:text-primary transition-colors">Inicio</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Agenda</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">La Sala</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Cartelera</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">La Compañía</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-foreground mb-4">Contacto</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>info@marula.club</li>
-                <li>+34 123 456 789</li>
-                <li>Barcelona, España</li>
+              <h3 className="font-outfit font-bold text-foreground mb-4">Contacto</h3>
+              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
+                <li>info@hubertdeblanck.com</li>
+                <li>+1 (555) 123-4567</li>
+                <li>La Habana, Cuba</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-foreground mb-4">Síguenos</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h3 className="font-outfit font-bold text-foreground mb-4">Síguenos</h3>
+              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
                 <li><a href="#" className="hover:text-primary transition-colors">Instagram</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors">Facebook</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Twitter</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">YouTube</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 Marula. Todos los derechos reservados.</p>
+          <div className="border-t border-border pt-8 text-center font-outfit text-sm text-muted-foreground">
+            <p>&copy; 2024 Compañía Hubert de Blanck. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

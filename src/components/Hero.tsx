@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import heroImage from "@/assets/hero-1.jpg";
+import { Sparkles } from "lucide-react";
+import heroTheater from "@/assets/hero-theater.jpg";
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = [
     {
-      sponsor: "Cervezas Alhambra",
-      title: "Monsieur Van Pratt",
-      subtitle: "Super Spicy Records",
-      image: heroImage,
+      category: "Teatro Musical",
+      title: "En el Bosque",
+      subtitle: "Una experiencia inmersiva que desafía los límites del teatro contemporáneo",
+      image: heroTheater,
     },
   ];
 
@@ -30,7 +30,7 @@ const Hero = () => {
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80 z-10" />
           <img
             src={slide.image}
             alt={slide.title}
@@ -38,20 +38,23 @@ const Hero = () => {
           />
           
           <div className="absolute inset-0 z-20 flex flex-col justify-center items-start container mx-auto px-4">
-            <div className="max-w-3xl">
-              <p className="text-sm font-medium text-foreground/80 mb-4 tracking-widest uppercase flex items-center gap-2">
-                <span className="w-8 h-px bg-primary"></span>
-                {slide.sponsor}
+            <div className="max-w-4xl">
+              <p className="font-outfit text-sm font-medium text-secondary mb-4 tracking-widest uppercase flex items-center gap-2">
+                <span className="w-8 h-px bg-secondary"></span>
+                {slide.category}
               </p>
-              <h1 className="text-7xl md:text-8xl font-bold text-foreground mb-4 leading-none">
+              <h1 className="font-playfair text-7xl md:text-8xl lg:text-9xl font-bold text-foreground mb-6 leading-none">
                 {slide.title}
               </h1>
-              <p className="text-xl text-foreground/80 mb-8">{slide.subtitle}</p>
+              <p className="font-outfit text-xl md:text-2xl text-foreground/90 mb-8 max-w-2xl leading-relaxed">
+                {slide.subtitle}
+              </p>
               <Button
-                size="icon"
-                className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 w-12"
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit font-semibold rounded-full px-8 group"
               >
-                <Plus className="h-6 w-6" />
+                <Sparkles className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
+                Descubre más
               </Button>
             </div>
           </div>

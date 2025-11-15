@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        playfair: ['Playfair Display', 'serif'],
+        outfit: ['Outfit', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,12 +51,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        venue: {
-          yellow: "hsl(var(--venue-yellow))",
-          coral: "hsl(var(--venue-coral))",
-          orange: "hsl(var(--venue-orange))",
-          dark: "hsl(var(--venue-dark))",
-          darker: "hsl(var(--venue-darker))",
+        theater: {
+          emerald: "hsl(var(--theater-emerald))",
+          copper: "hsl(var(--theater-copper))",
+          gold: "hsl(var(--theater-gold))",
+          dark: "hsl(var(--theater-dark))",
+          darker: "hsl(var(--theater-darker))",
         },
       },
       borderRadius: {

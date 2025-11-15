@@ -8,42 +8,42 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 5%;
+    --foreground: 40 20% 95%;
 
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 40 20% 95%;
 
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 40 20% 95%;
 
-    --primary: 63 100% 50%;
-    --primary-foreground: 0 0% 4%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 8 100% 64%;
-    --secondary-foreground: 0 0% 4%;
+    --secondary: 28 76% 56%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --muted-foreground: 40 10% 60%;
 
-    --accent: 63 100% 50%;
-    --accent-foreground: 0 0% 4%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 63 100% 50%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 160 84% 39%;
 
     --radius: 0.5rem;
     
-    /* Custom venue colors */
-    --venue-yellow: 63 100% 50%;
-    --venue-coral: 8 100% 64%;
-    --venue-orange: 16 100% 60%;
-    --venue-dark: 0 0% 4%;
-    --venue-darker: 0 0% 2%;
+    /* Custom theater colors */
+    --theater-emerald: 160 84% 39%;
+    --theater-copper: 28 76% 56%;
+    --theater-gold: 45 100% 51%;
+    --theater-dark: 0 0% 5%;
+    --theater-darker: 0 0% 3%;
 
     --sidebar-background: 0 0% 98%;
 

@@ -20,11 +20,11 @@ const BlogCard = ({ title, image, excerpt }: BlogCardProps) => {
           <ArrowUpRight className="h-5 w-5 text-secondary-foreground" />
         </div>
       </div>
-      <h3 className="text-xl font-bold text-foreground group-hover:text-secondary transition-colors mb-2 leading-tight">
+      <h3 className="font-playfair text-xl font-bold text-foreground group-hover:text-secondary transition-colors mb-2 leading-tight">
         {title}
       </h3>
       {excerpt && (
-        <p className="text-sm text-muted-foreground line-clamp-2">{excerpt}</p>
+        <p className="font-outfit text-sm text-muted-foreground line-clamp-2">{excerpt}</p>
       )}
     </article>
   );
