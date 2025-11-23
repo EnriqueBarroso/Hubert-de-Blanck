@@ -1,15 +1,79 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import { plays } from "@/data/plays";
-import { actors } from "@/data/actors";
+import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ActorCard from "@/components/ActorCard";
 import { Calendar, User, MapPin, Clock, ArrowLeft } from "lucide-react";
 
+interface Play {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  image: string;
+  category: string;
+  year?: number;
+  status?: string;
+  date?: string;
+  time?: string;
+  venue?: string;
+  availability?: string;
+}
+
+interface Actor {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+}
+
 const ProduccionDetalle = () => {
   const { id } = useParams();
-  const play = plays.find(p => p.id === id);
+  const [play, setPlay] = useState<Play | null>(null);
+  const [actors, setActors] = useState<Actor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetchPlayAndActors();
+    }
+  }, [id]);
+
+  const fetchPlayAndActors = async () => {
+    try {
+      const { data: playData, error: playError } = await supabase
+        .from("plays")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (playError) throw playError;
+      setPlay(playData);
+
+      const { data: actorsData, error: actorsError } = await supabase
+        .from("actors")
+        .select("*")
+        .order("name", { ascending: true });
+
+      if (actorsError) throw actorsError;
+      setActors(actorsData || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    );
+  }
 
   if (!play) {
     return (

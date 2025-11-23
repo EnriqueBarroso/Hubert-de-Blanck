@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import { plays } from "@/data/plays";
+import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +13,50 @@ import {
 } from "@/components/ui/carousel";
 import { Calendar, User } from "lucide-react";
 
+interface Play {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  image: string;
+  category: string;
+  year?: number;
+  status?: string;
+  date?: string;
+  time?: string;
+  venue?: string;
+  availability?: string;
+}
+
 const Producciones = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  
-  const repertorioPlays = plays.filter(play => play.status === "repertorio");
+  const [plays, setPlays] = useState<Play[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPlays();
+  }, []);
+
+  const fetchPlays = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("plays")
+        .select("*")
+        .eq("status", "En repertorio")
+        .order("title", { ascending: true });
+
+      if (error) throw error;
+      setPlays(data || []);
+    } catch (error) {
+      console.error("Error fetching plays:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const filteredPlays = selectedCategory === "all" 
-    ? repertorioPlays 
-    : repertorioPlays.filter(play => play.category === selectedCategory);
+    ? plays 
+    : plays.filter(play => play.category.toLowerCase() === selectedCategory);
 
   const categories = [
     { value: "all", label: "Todas" },
@@ -28,6 +64,14 @@ const Producciones = () => {
     { value: "contemporaneo", label: "Contemporáneo" },
     { value: "musical", label: "Musical" }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
