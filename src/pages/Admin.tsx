@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LogOut } from "lucide-react";
 import AdminPlaysTable from "@/components/admin/AdminPlaysTable";
 import AdminActorsTable from "@/components/admin/AdminActorsTable";
+import AdminImageManager from "@/components/admin/AdminImageManager";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ const Admin = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-display mb-2">Panel de Administración</h1>
-            <p className="text-muted-foreground">Gestiona producciones y elenco</p>
+            <p className="text-muted-foreground">Gestiona producciones, elenco e imágenes</p>
           </div>
           <Button onClick={handleSignOut} variant="outline">
             <LogOut className="mr-2 h-4 w-4" />
@@ -97,9 +98,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="plays" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-xl grid-cols-3">
             <TabsTrigger value="plays">Producciones</TabsTrigger>
             <TabsTrigger value="actors">Elenco</TabsTrigger>
+            <TabsTrigger value="images">Imágenes</TabsTrigger>
           </TabsList>
           
           <TabsContent value="plays" className="mt-6">
@@ -108,6 +110,10 @@ const Admin = () => {
           
           <TabsContent value="actors" className="mt-6">
             <AdminActorsTable />
+          </TabsContent>
+
+          <TabsContent value="images" className="mt-6">
+            <AdminImageManager />
           </TabsContent>
         </Tabs>
       </div>
