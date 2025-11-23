@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -131,9 +132,11 @@ const Compania = () => {
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit">
                 Únete a nosotros
               </Button>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit">
-                Ver producciones
-              </Button>
+              <Link to="/producciones">
+                <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit">
+                  Ver producciones
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
