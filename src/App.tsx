@@ -10,6 +10,7 @@ import Talleres from "./pages/Talleres";
 import Blog from "./pages/Blog";
 import Elenco from "./pages/Elenco";
 import Producciones from "./pages/Producciones";
+import ProduccionDetalle from "./pages/ProduccionDetalle";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/cartelera" element={<Cartelera />} />
           <Route path="/compania" element={<Compania />} />
           <Route path="/producciones" element={<Producciones />} />
+          <Route path="/producciones/:id" element={<ProduccionDetalle />} />
           <Route path="/talleres" element={<Talleres />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/elenco" element={<Elenco />} />

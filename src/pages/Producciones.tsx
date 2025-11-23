@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { plays } from "@/data/plays";
 import { Badge } from "@/components/ui/badge";
@@ -118,13 +119,15 @@ const Producciones = () => {
                       <p className="font-outfit text-sm text-foreground/80 line-clamp-3 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         {play.description}
                       </p>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit"
-                      >
-                        Más información
-                      </Button>
+                      <Link to={`/producciones/${play.id}`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit"
+                        >
+                          Más información
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </CarouselItem>
