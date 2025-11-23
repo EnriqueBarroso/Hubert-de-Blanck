@@ -129,9 +129,11 @@ const Compania = () => {
               que desafían lo convencional y abrazan la vanguardia artística.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit">
-                Únete a nosotros
-              </Button>
+              <Link to="/elenco">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit">
+                  Ver elenco
+                </Button>
+              </Link>
               <Link to="/producciones">
                 <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit">
                   Ver producciones
