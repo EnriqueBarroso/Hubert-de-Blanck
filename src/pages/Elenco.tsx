@@ -1,9 +1,49 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { actors } from "@/data/actors";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 
+interface Actor {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+}
+
 const Elenco = () => {
+  const [actors, setActors] = useState<Actor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchActors();
+  }, []);
+
+  const fetchActors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("actors")
+        .select("*")
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+      setActors(data || []);
+    } catch (error) {
+      console.error("Error fetching actors:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
