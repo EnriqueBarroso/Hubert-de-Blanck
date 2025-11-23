@@ -42,9 +42,6 @@ const Navbar = () => {
             <Link to="/compania" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
               La Compañía
             </Link>
-            <Link to="/elenco" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              Elenco
-            </Link>
             <Link to="/talleres" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
               Talleres
             </Link>
@@ -88,9 +85,6 @@ const Navbar = () => {
               </Link>
               <Link to="/compania" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
                 La Compañía
-              </Link>
-              <Link to="/elenco" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-                Elenco
               </Link>
               <Link to="/talleres" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
                 Talleres
