@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import heroTheater from "@/assets/hero-theater.jpg";
@@ -7,9 +8,9 @@ const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = [
     {
-      category: "Teatro Musical",
-      title: "En el Bosque",
-      subtitle: "Una experiencia inmersiva que desafía los límites del teatro contemporáneo",
+      category: "Teatro Contemporáneo",
+      title: "Las brujas de Salem",
+      subtitle: "Un drama intenso sobre histeria colectiva, poder y verdad en tiempos de crisis",
       image: heroTheater,
     },
   ];
@@ -49,13 +50,15 @@ const Hero = () => {
               <p className="font-outfit text-xl md:text-2xl text-foreground/90 mb-8 max-w-2xl leading-relaxed">
                 {slide.subtitle}
               </p>
-              <Button
-                size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit font-semibold rounded-full px-8 group"
-              >
-                <Sparkles className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
-                Descubre más
-              </Button>
+              <Link to="/cartelera">
+                <Button
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit font-semibold rounded-full px-8 group"
+                >
+                  <Sparkles className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
+                  Descubre más
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
