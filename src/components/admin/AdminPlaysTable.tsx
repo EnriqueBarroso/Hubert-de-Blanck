@@ -5,28 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import PlayDialog from "./PlayDialog";
-
-export interface Play {
-  id: string;
-  title: string;
-  author: string;
-  description: string;
-  image: string;
-  category: string;
-  year?: number;
-  status?: string;
-  date?: string;
-  time?: string;
-  venue?: string;
-  availability?: string;
-}
+// 1. Importamos el tipo centralizado
+import { Play } from "@/types";
+import CastManager from "./CastManager"; // Importar el nuevo componente
+import { Users } from "lucide-react"; // Importar icono
 
 const AdminPlaysTable = () => {
   const { toast } = useToast();
+  // Play ahora viene de tus tipos globales, asegurando consistencia
   const [plays, setPlays] = useState<Play[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlay, setEditingPlay] = useState<Play | null>(null);
+  const [castManagerOpen, setCastManagerOpen] = useState(false);
+  const [selectedPlayForCast, setSelectedPlayForCast] = useState<Play | null>(null);
 
   useEffect(() => {
     fetchPlays();
@@ -41,11 +33,14 @@ const AdminPlaysTable = () => {
 
       if (error) throw error;
       setPlays(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      // 2. Manejo seguro de errores sin 'any'
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido al cargar";
+
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudieron cargar las producciones.",
+        description: "No se pudieron cargar las producciones: " + errorMessage,
       });
     } finally {
       setLoading(false);
@@ -68,11 +63,14 @@ const AdminPlaysTable = () => {
         description: "La producción se ha eliminado correctamente.",
       });
       fetchPlays();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      // 2. Manejo seguro de errores sin 'any'
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: errorMessage,
       });
     }
   };
@@ -90,6 +88,11 @@ const AdminPlaysTable = () => {
   if (loading) {
     return <p className="text-center text-muted-foreground">Cargando...</p>;
   }
+
+  const handleManageCast = (play: Play) => {
+    setSelectedPlayForCast(play);
+    setCastManagerOpen(true);
+  };
 
   return (
     <div className="space-y-4">
@@ -123,6 +126,14 @@ const AdminPlaysTable = () => {
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => handleManageCast(play)}
+                    title="Gestionar Elenco"
+                  >
+                    <Users className="h-4 w-4 text-primary" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleEdit(play)}
                   >
                     <Pencil className="h-4 w-4" />
@@ -147,6 +158,13 @@ const AdminPlaysTable = () => {
         play={editingPlay}
         onSuccess={fetchPlays}
       />
+      {selectedPlayForCast && (
+        <CastManager 
+          play={selectedPlayForCast}
+          open={castManagerOpen}
+          onOpenChange={setCastManagerOpen}
+        />
+      )}
     </div>
   );
 };

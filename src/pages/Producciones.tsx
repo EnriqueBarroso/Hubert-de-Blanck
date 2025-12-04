@@ -13,20 +13,8 @@ import {
 } from "@/components/ui/carousel";
 import { Calendar, User } from "lucide-react";
 
-interface Play {
-  id: string;
-  title: string;
-  author: string;
-  description: string;
-  image: string;
-  category: string;
-  year?: number;
-  status?: string;
-  date?: string;
-  time?: string;
-  venue?: string;
-  availability?: string;
-}
+import { Play } from "@/types"; // Importas desde tu nuevo archivo centralizado
+
 
 const Producciones = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -42,7 +30,9 @@ const Producciones = () => {
       const { data, error } = await supabase
         .from("plays")
         .select("*")
-        .eq("status", "En repertorio")
+        // CAMBIO: Filtramos por 'repertorio' para coincidir con el Admin
+        // (Antes tenías "En repertorio" con mayúscula, ahora usamos el value minúscula del Select)
+        .eq("status", "repertorio")
         .order("title", { ascending: true });
 
       if (error) throw error;
@@ -53,9 +43,9 @@ const Producciones = () => {
       setLoading(false);
     }
   };
-  
-  const filteredPlays = selectedCategory === "all" 
-    ? plays 
+
+  const filteredPlays = selectedCategory === "all"
+    ? plays
     : plays.filter(play => play.category.toLowerCase() === selectedCategory);
 
   const categories = [
@@ -76,7 +66,7 @@ const Producciones = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-background z-0" />
@@ -86,7 +76,7 @@ const Producciones = () => {
               Nuestras Producciones
             </h1>
             <p className="font-outfit text-lg text-muted-foreground leading-relaxed">
-              Explora nuestro repertorio completo de obras teatrales, desde los clásicos hasta 
+              Explora nuestro repertorio completo de obras teatrales, desde los clásicos hasta
               producciones contemporáneas que han marcado nuestra trayectoria artística.
             </p>
           </div>
@@ -131,16 +121,15 @@ const Producciones = () => {
                       alt={play.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    
+
                     <div className="absolute top-4 left-4 z-20">
-                      <Badge 
-                        className={`font-outfit uppercase font-bold text-xs px-3 py-1 ${
-                          play.category === "musical" 
+                      <Badge
+                        className={`font-outfit uppercase font-bold text-xs px-3 py-1 ${play.category === "musical"
                             ? "bg-secondary text-secondary-foreground"
                             : play.category === "contemporaneo"
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-theater-copper text-foreground"
-                        }`}
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-theater-copper text-foreground"
+                          }`}
                       >
                         {play.category}
                       </Badge>
@@ -164,8 +153,8 @@ const Producciones = () => {
                         {play.description}
                       </p>
                       <Link to={`/producciones/${play.id}`}>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           className="opacity-0 group-hover:opacity-100 transition-opacity border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit"
                         >

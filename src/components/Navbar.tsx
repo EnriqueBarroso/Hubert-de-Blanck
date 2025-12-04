@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { GlobalSearch } from "./GlobalSearch";
 
 const Navbar = () => {
   const { toast } = useToast();
@@ -79,7 +80,7 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu - SIN ENLACE A GALERÍA */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
               Inicio
@@ -102,6 +103,11 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Buscador Global */}
+            <div className="hidden md:block">
+              <GlobalSearch />
+            </div>
+
             <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
               <Theater className="h-5 w-5" />
             </Button>
@@ -154,10 +160,14 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - SIN ENLACE A GALERÍA */}
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 animate-fade-in">
             <div className="flex flex-col gap-4">
+              <div className="mb-2">
+                <GlobalSearch />
+              </div>
+              
               <Link to="/" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
                 Inicio
               </Link>

@@ -1,57 +1,78 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import EventCard from "@/components/EventCard";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Play, GalleryItem } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
+// Mantenemos la imagen estática solo como respaldo (fallback) por si la BD está vacía
+import theaterInterior from "@/assets/theater-interior.jpg";
 import eventMusical from "@/assets/event-musical.jpg";
 import eventContemporary from "@/assets/event-contemporary.jpg";
-import eventWorkshop from "@/assets/event-workshop.jpg";
-import theaterInterior from "@/assets/theater-interior.jpg";
 
 const Index = () => {
-  const upcomingEvents = [
-    {
-      title: "La Casa de Bernarda Alba",
-      date: "15-28 Diciembre",
-      image: eventContemporary,
-      category: "Teatro Contemporáneo",
-      categoryVariant: "contemporary" as const,
-    },
-    {
-      title: "Chicago - El Musical",
-      date: "5-20 Enero",
-      image: eventMusical,
-      category: "Teatro Musical",
-      categoryVariant: "musical" as const,
-    },
-    {
-      title: "Taller de Actuación",
-      date: "Todos los Sábados",
-      image: eventWorkshop,
-      category: "Formación",
-      categoryVariant: "workshop" as const,
-    },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState<Play[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const blogPosts = [
+  // Mantenemos tus títulos de blog que te gustan, pero haremos las imágenes dinámicas
+  const blogPostsStructure = [
     {
       title: "El teatro como herramienta de transformación social en tiempos modernos",
-      image: eventContemporary,
       excerpt: "Exploramos cómo el teatro contemporáneo refleja y transforma nuestra realidad",
+      fallbackImage: eventContemporary, // Imagen por defecto si no hay en galería
     },
     {
       title: "Detrás del telón: El proceso creativo de nuestras producciones musicales",
-      image: eventMusical,
       excerpt: "Un vistazo íntimo al trabajo que hay detrás de cada montaje",
+      fallbackImage: eventMusical,
     },
     {
       title: "La importancia de los espacios teatrales independientes en la cultura actual",
-      image: theaterInterior,
       excerpt: "Por qué los teatros como el nuestro son esenciales para la diversidad cultural",
+      fallbackImage: theaterInterior,
     },
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // 1. Cargar Obras en Cartelera (Máximo 3)
+        const { data: playsData } = await supabase
+          .from("plays")
+          .select("*")
+          .eq("status", "cartelera")
+          .order("date", { ascending: true }) // Ordenar por fecha (texto) por ahora
+          .limit(3);
+        
+        if (playsData) setUpcomingEvents(playsData);
+
+        // 2. Cargar Imágenes de la Galería para usarlas en las secciones
+        // Traemos las últimas 5 imágenes subidas para repartirlas en la home
+        const { data: galleryData } = await supabase
+          .from("gallery")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        if (galleryData) setGalleryImages(galleryData);
+
+      } catch (error) {
+        console.error("Error cargando datos del inicio:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,20 +93,49 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {upcomingEvents.map((event, index) => (
-              <EventCard key={index} {...event} />
-            ))}
-          </div>
+          {loading ? (
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+               {[1, 2, 3].map((i) => (
+                 <Skeleton key={i} className="aspect-[4/3] w-full rounded-lg" />
+               ))}
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {upcomingEvents.length > 0 ? (
+                upcomingEvents.map((event) => (
+                  <EventCard 
+                    key={event.id}
+                    title={event.title}
+                    date={event.date || "Fecha por confirmar"}
+                    image={event.image || "/placeholder.svg"}
+                    category={event.category}
+                    // Lógica para asignar el color de la etiqueta según la categoría
+                    categoryVariant={
+                      event.category.toLowerCase().includes("musical") ? "musical" : 
+                      event.category.toLowerCase().includes("taller") ? "workshop" : "contemporary"
+                    }
+                  />
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-12 border border-dashed border-border rounded-lg">
+                  <p className="text-muted-foreground font-outfit">
+                    No hay funciones programadas en cartelera en este momento.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="text-center">
-            <Button 
-              size="lg"
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
-            >
-              Ver cartelera completa
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/cartelera">
+              <Button 
+                size="lg"
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
+              >
+                Ver cartelera completa
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -112,17 +162,20 @@ const Index = () => {
                 Desde nuestra fundación, hemos creído que el teatro tiene el poder de cuestionar, 
                 inspirar y transformar. Cada producción es una invitación a ver el mundo desde nuevas perspectivas.
               </p>
-              <Button 
-                variant="outline"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit"
-              >
-                Conoce nuestra historia
-              </Button>
+              <Link to="/compania">
+                <Button 
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit"
+                >
+                  Conoce nuestra historia
+                </Button>
+              </Link>
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-background to-transparent z-10 lg:block hidden" />
+              {/* Usamos la primera imagen de la galería, o el fallback si no hay */}
               <img
-                src={theaterInterior}
+                src={galleryImages.length > 0 ? galleryImages[0].image_url : theaterInterior}
                 alt="Teatro Hubert de Blanck"
                 className="rounded-lg w-full h-[500px] object-cover"
               />
@@ -146,19 +199,34 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {blogPosts.map((post, index) => (
-              <BlogCard key={index} {...post} />
-            ))}
+            {blogPostsStructure.map((post, index) => {
+              // Intentamos usar imágenes de la galería (saltando la primera que usamos en Compañía)
+              // Si no hay suficientes imágenes en la galería, usamos la imagen fallback original
+              const dynamicImage = galleryImages.length > (index + 1) 
+                ? galleryImages[index + 1].image_url 
+                : post.fallbackImage;
+
+              return (
+                <BlogCard 
+                  key={index} 
+                  title={post.title}
+                  excerpt={post.excerpt}
+                  image={dynamicImage}
+                />
+              );
+            })}
           </div>
 
           <div className="text-center">
-            <Button 
-              size="lg"
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
-            >
-              Leer más artículos
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/blog">
+              <Button 
+                size="lg"
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
+              >
+                Leer más artículos
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -180,10 +248,10 @@ const Index = () => {
             <div>
               <h3 className="font-outfit font-bold text-foreground mb-4">Navegación</h3>
               <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Inicio</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Cartelera</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">La Compañía</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
+                <li><Link to="/" className="hover:text-primary transition-colors">Inicio</Link></li>
+                <li><Link to="/cartelera" className="hover:text-primary transition-colors">Cartelera</Link></li>
+                <li><Link to="/compania" className="hover:text-primary transition-colors">La Compañía</Link></li>
+                <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
               </ul>
             </div>
             <div>

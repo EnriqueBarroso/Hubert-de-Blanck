@@ -3,14 +3,10 @@ import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
-
-interface Actor {
-  id: string;
-  name: string;
-  role: string;
-  bio: string;
-  image: string;
-}
+// 1. Importamos el componente Skeleton para mejorar la carga
+import { Skeleton } from "@/components/ui/skeleton";
+// 2. Importamos el tipo centralizado (Soluciona el error "Cannot find name Actor")
+import { Actor } from "@/types";
 
 const Elenco = () => {
   const [actors, setActors] = useState<Actor[]>([]);
@@ -29,17 +25,46 @@ const Elenco = () => {
 
       if (error) throw error;
       setActors(data || []);
-    } catch (error) {
+    } catch (error: unknown) {
+      // Manejo de errores más seguro que 'any'
       console.error("Error fetching actors:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // 3. Nueva UI de carga con Skeletons (mucho más profesional)
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Cargando...</p>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <section className="relative py-20 px-4">
+           {/* Hero Skeleton */}
+           <div className="container mx-auto max-w-4xl text-center relative z-10 pt-20 mb-16">
+             <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+             <Skeleton className="h-6 w-1/2 mx-auto" />
+           </div>
+
+           {/* Grid Skeleton */}
+           <div className="container mx-auto max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="rounded-lg border border-border bg-card p-0 overflow-hidden">
+                  <Skeleton className="w-full aspect-[3/4]" />
+                  <div className="p-6 space-y-4">
+                    <Skeleton className="h-8 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-4/5" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
@@ -49,7 +74,7 @@ const Elenco = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden">
+      <section className="relative py-20 px-4 overflow-hidden pt-32">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
         <div className="container mx-auto max-w-4xl text-center relative z-10">
           <h1 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-6">

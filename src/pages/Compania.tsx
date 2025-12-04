@@ -1,15 +1,43 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, Heart, Lightbulb, Users, Globe, Sparkles } from "lucide-react";
+import { Award, Heart, Lightbulb, Users, Globe, Sparkles, Quote } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import CompanyGallery from "@/components/CompanyGallery";
 
+// Imágenes estáticas
 import teamPhoto from "@/assets/team-photo.jpg";
 import history1 from "@/assets/history-1.jpg";
 import history2 from "@/assets/history-2.jpg";
 import theaterInterior from "@/assets/theater-interior.jpg";
 
 const Compania = () => {
+  // Estado para la foto del equipo (dinámica o estática por defecto)
+  const [teamPhotoUrl, setTeamPhotoUrl] = useState<string>(teamPhoto);
+
+  useEffect(() => {
+    const fetchTeamPhoto = async () => {
+      try {
+        const { data } = await supabase
+          .from("gallery")
+          .select("image_url")
+          .or("category.eq.Equipo,category.eq.Ensayos")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (data) {
+          setTeamPhotoUrl(data.image_url);
+        }
+      } catch (error) {
+        console.error("Error cargando foto de equipo:", error);
+      }
+    };
+    fetchTeamPhoto();
+  }, []);
+
   const values = [
     {
       icon: Lightbulb,
@@ -35,24 +63,24 @@ const Compania = () => {
 
   const team = [
     {
-      name: "Ana Martínez",
-      role: "Directora Artística",
-      bio: "Más de 20 años revolucionando el teatro latinoamericano con su visión contemporánea.",
+      name: "Orietta Medina",
+      role: "Directora General",
+      bio: "Actriz y directora con una vasta trayectoria. Lidera la compañía integrando el legado de Teatro Estudio con nuevas búsquedas estéticas contemporáneas.",
     },
     {
-      name: "Carlos Rodríguez",
-      role: "Director de Producción",
-      bio: "Experto en montajes complejos con experiencia en teatros de todo el mundo.",
+      name: "Fabricio Hernández",
+      role: "Director Artístico",
+      bio: "Dramaturgo y director enfocado en la experimentación escénica y el diálogo con el público actual.",
     },
     {
-      name: "María González",
-      role: "Coreógrafa Principal",
-      bio: "Especialista en teatro musical con formación en Broadway y el West End.",
+      name: "Marcelo Sanoja",
+      role: "Producción",
+      bio: "Encargado de la logística y producción ejecutiva, asegurando que cada espectáculo llegue a escena con la mayor calidad.",
     },
     {
-      name: "Luis Fernández",
-      role: "Director Pedagógico",
-      bio: "Lidera nuestros programas de formación con metodologías innovadoras.",
+      name: "Equipo Técnico",
+      role: "Luces y Sonido",
+      bio: "Profesionales dedicados que construyen la atmósfera mágica de cada función desde la cabina y el escenario.",
     },
   ];
 
@@ -60,49 +88,49 @@ const Compania = () => {
     {
       year: "2023",
       title: "Premio Nacional de Teatro",
-      description: "Mejor Producción del Año por 'La Casa de Bernarda Alba'",
+      description: "Reconocimiento a la excelencia artística y trayectoria.",
     },
     {
       year: "2022",
       title: "Reconocimiento UNESCO",
-      description: "Por contribución al desarrollo cultural sostenible",
+      description: "Por contribución al desarrollo cultural sostenible.",
     },
     {
       year: "2021",
       title: "Festival Internacional",
-      description: "Gran Premio del Jurado en el Festival de Teatro de Bogotá",
+      description: "Gran Premio del Jurado en el Festival de Teatro de Bogotá.",
     },
     {
       year: "2020",
-      title: "Innovación Cultural",
-      description: "Premio a la Excelencia en Teatro Digital durante la pandemia",
+      title: "Premio Villanueva",
+      description: "De la crítica teatral a los mejores espectáculos del año.",
     },
   ];
 
   const milestones = [
     {
       year: "1955",
-      title: "Fundación",
-      description: "Nace la Compañía Hubert de Blanck como un espacio dedicado a la experimentación teatral.",
+      title: "La Sala",
+      description: "Se inaugura la sala Hubert de Blanck en el Vedado, un espacio que se convertiría en sede emblemática del teatro cubano.",
       image: history1,
     },
     {
-      year: "1980",
-      title: "Expansión Internacional",
-      description: "Primera gira internacional que llevó nuestras producciones a Europa y América Latina.",
+      year: "1991",
+      title: "Fundación de la Compañía",
+      description: "Nace la Compañía Teatral Hubert de Blanck, derivada del legendario grupo Teatro Estudio, consolidando un perfil artístico propio.",
       image: history2,
     },
     {
       year: "2010",
-      title: "Renovación del Espacio",
-      description: "Modernización integral del teatro manteniendo su esencia histórica.",
+      title: "Renovación",
+      description: "Restauración capital del teatro y modernización técnica para acoger montajes de mayor complejidad.",
       image: theaterInterior,
     },
     {
       year: "2024",
-      title: "Nueva Era",
-      description: "Consolidación como referente del teatro contemporáneo con enfoque en nuevas narrativas.",
-      image: teamPhoto,
+      title: "Actualidad",
+      description: "Un referente indiscutible de la escena cubana, manteniendo vivo el rigor artístico heredado de sus fundadores.",
+      image: teamPhotoUrl,
     },
   ];
 
@@ -125,8 +153,7 @@ const Compania = () => {
               Compañía Hubert de Blanck
             </h1>
             <p className="font-outfit text-xl text-muted-foreground leading-relaxed mb-8">
-              Desde 1955, transformando la escena teatral cubana y latinoamericana con producciones 
-              que desafían lo convencional y abrazan la vanguardia artística.
+              Más de tres décadas de creación teatral ininterrumpida, defendiendo un teatro de arte, reflexivo y comprometido con su tiempo.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/elenco">
@@ -157,10 +184,7 @@ const Compania = () => {
                   Nuestra Misión
                 </h3>
                 <p className="font-outfit text-muted-foreground leading-relaxed">
-                  Crear experiencias teatrales transformadoras que desafíen percepciones, 
-                  inspiren reflexión y celebren la diversidad cultural. Nos comprometemos a 
-                  ser un espacio de excelencia artística donde el teatro contemporáneo y la 
-                  tradición convergen para dar vida a historias que importan.
+                  Producir espectáculos teatrales de alto nivel artístico que dialoguen con la realidad contemporánea, fomentando el pensamiento crítico y la sensibilidad estética en nuestro público.
                 </p>
               </CardContent>
             </Card>
@@ -174,10 +198,7 @@ const Compania = () => {
                   Nuestra Visión
                 </h3>
                 <p className="font-outfit text-muted-foreground leading-relaxed">
-                  Ser el epicentro del teatro vanguardista en América Latina, reconocidos 
-                  internacionalmente por nuestra audacia creativa, innovación escénica y 
-                  compromiso con la formación de nuevas generaciones de artistas que llevarán 
-                  el teatro hacia territorios inexplorados.
+                  Mantenernos como un espacio de confluencia para artistas consagrados y nuevas generaciones, honrando nuestra herencia de Teatro Estudio mientras exploramos nuevos lenguajes escénicos.
                 </p>
               </CardContent>
             </Card>
@@ -193,7 +214,7 @@ const Compania = () => {
               Nuestros Valores
             </h2>
             <p className="font-outfit text-lg text-muted-foreground max-w-2xl mx-auto">
-              Los pilares que guían cada decisión artística y cada producción que llevamos al escenario
+              Ética, rigor artístico y compromiso social
             </p>
           </div>
 
@@ -217,6 +238,33 @@ const Compania = () => {
         </div>
       </section>
 
+      {/* NUEVA SECCIÓN: HISTORIA Y LEGADO */}
+      <section className="py-20 bg-gradient-to-b from-background to-theater-darker">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <Quote className="h-12 w-12 text-primary mx-auto mb-6 opacity-50" />
+              <h2 className="font-playfair text-4xl md:text-5xl font-bold text-foreground mb-6">
+                Un Legado de Excelencia
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
+            </div>
+            
+            <div className="space-y-8 font-outfit text-lg text-muted-foreground leading-relaxed text-justify md:px-8">
+              <p>
+                La <strong className="text-foreground">Compañía Teatral Hubert de Blanck</strong> ocupa un lugar privilegiado en la historia de las artes escénicas de Cuba. Fundada oficialmente en <strong className="text-foreground">1991</strong>, nuestra agrupación nació como una derivación natural y evolutiva del legendario grupo <strong>Teatro Estudio</strong>, herederos de una tradición de rigor artístico y compromiso social que marcó el siglo XX cubano.
+              </p>
+              <p>
+                Bajo la dirección general de <strong className="text-foreground">Orietta Medina</strong>, hemos mantenido viva la llama de la experimentación, llevando a escena tanto clásicos universales como obras contemporáneas latinoamericanas. Nuestra sede, la emblemática sala Hubert de Blanck en el corazón del Vedado, no es solo un edificio; es un laboratorio creativo donde convergen maestros consagrados y jóvenes talentos para dialogar sobre la realidad humana a través del arte.
+              </p>
+              <p>
+                Nos define la convicción de que el teatro es un espacio para el pensamiento crítico y la emoción estética. Más que representar obras, buscamos crear experiencias que resuenen en la memoria del espectador, honrando nuestro pasado mientras construimos el futuro de la escena nacional.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* History Timeline */}
       <section className="py-20 bg-theater-darker">
         <div className="container mx-auto px-4">
@@ -225,7 +273,7 @@ const Compania = () => {
               Nuestra Trayectoria
             </h2>
             <p className="font-outfit text-lg text-muted-foreground max-w-2xl mx-auto">
-              70 años de historia teatral marcados por la innovación y la pasión artística
+              Desde la fundación de la sala hasta la consolidación de la compañía actual
             </p>
           </div>
 
@@ -238,7 +286,7 @@ const Compania = () => {
                 }`}
               >
                 <div className="lg:w-1/2">
-                  <div className="relative overflow-hidden rounded-lg aspect-video">
+                  <div className="relative overflow-hidden rounded-lg aspect-video border border-border/50 shadow-xl">
                     <img
                       src={milestone.image}
                       alt={milestone.title}
@@ -268,35 +316,39 @@ const Compania = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Equipo Artístico
+              Dirección Artística
             </h2>
             <p className="font-outfit text-lg text-muted-foreground max-w-2xl mx-auto">
-              Los visionarios que dan vida a nuestras producciones
+              Quienes guían el rumbo creativo de la compañía
             </p>
           </div>
 
           <div className="mb-12">
-            <div className="relative overflow-hidden rounded-lg aspect-[21/9] max-w-5xl mx-auto">
+            <div className="relative overflow-hidden rounded-lg aspect-[21/9] max-w-5xl mx-auto shadow-2xl border border-border/30">
               <img
-                src={teamPhoto}
-                alt="Equipo de la compañía"
+                src={teamPhotoUrl}
+                alt="Equipo de la compañía Hubert de Blanck"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-6 left-6 text-white">
+                <p className="font-playfair text-3xl font-bold mb-2">Elenco y Equipo Técnico</p>
+                <p className="font-outfit text-white/80">La fuerza vital de cada producción</p>
+              </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {team.map((member, index) => (
-              <Card key={index} className="bg-card border-border hover:border-primary transition-colors">
-                <CardContent className="p-6">
+              <Card key={index} className="bg-card border-border hover:border-primary transition-colors h-full">
+                <CardContent className="p-6 flex flex-col h-full">
                   <h4 className="font-playfair text-xl font-bold text-foreground mb-2">
                     {member.name}
                   </h4>
-                  <p className="font-outfit text-sm text-primary mb-3 font-semibold">
+                  <p className="font-outfit text-sm text-primary mb-4 font-semibold uppercase tracking-wide border-b border-border pb-2">
                     {member.role}
                   </p>
-                  <p className="font-outfit text-sm text-muted-foreground leading-relaxed">
+                  <p className="font-outfit text-sm text-muted-foreground leading-relaxed flex-grow">
                     {member.bio}
                   </p>
                 </CardContent>
@@ -345,6 +397,8 @@ const Compania = () => {
         </div>
       </section>
 
+      <CompanyGallery />
+
       {/* CTA */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20" />
@@ -357,12 +411,16 @@ const Compania = () => {
               Ya sea como espectador, estudiante o colaborador, hay un lugar para ti en nuestra comunidad teatral
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit">
-                Ver cartelera
-              </Button>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit">
-                Únete a nuestros talleres
-              </Button>
+              <Link to="/cartelera">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit">
+                  Ver cartelera
+                </Button>
+              </Link>
+              <Link to="/talleres">
+                <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-outfit">
+                  Únete a nuestros talleres
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -385,10 +443,10 @@ const Compania = () => {
             <div>
               <h3 className="font-outfit font-bold text-foreground mb-4">Navegación</h3>
               <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li><a href="/" className="hover:text-primary transition-colors">Inicio</a></li>
-                <li><a href="/cartelera" className="hover:text-primary transition-colors">Cartelera</a></li>
-                <li><a href="/compania" className="hover:text-primary transition-colors">La Compañía</a></li>
-                <li><a href="/blog" className="hover:text-primary transition-colors">Blog</a></li>
+                <li><Link to="/" className="hover:text-primary transition-colors">Inicio</Link></li>
+                <li><Link to="/cartelera" className="hover:text-primary transition-colors">Cartelera</Link></li>
+                <li><Link to="/compania" className="hover:text-primary transition-colors">La Compañía</Link></li>
+                <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
               </ul>
             </div>
             <div>
