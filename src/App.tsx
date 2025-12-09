@@ -18,6 +18,7 @@ import Admin from "./pages/Admin";
 // Importamos el componente de protección
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Galeria from "./pages/Galeria";
+import Historia from "./pages/Historia";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/cartelera" element={<Cartelera />} />
           <Route path="/compania" element={<Compania />} />
+          <Route path="/historia" element={<Historia />} />
           <Route path="/galeria" element={<Galeria />} />
           <Route path="/producciones" element={<Producciones />} />
           <Route path="/producciones/:id" element={<ProduccionDetalle />} />

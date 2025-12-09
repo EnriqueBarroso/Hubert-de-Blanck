@@ -18,6 +18,7 @@ export type Database = {
           name: string
           role: string
           updated_at: string | null
+          time_period: string | null // <--- NUEVO CAMPO
         }
         Insert: {
           bio: string
@@ -27,6 +28,7 @@ export type Database = {
           name: string
           role: string
           updated_at?: string | null
+          time_period?: string | null // <--- NUEVO CAMPO
         }
         Update: {
           bio?: string
@@ -36,6 +38,7 @@ export type Database = {
           name?: string
           role?: string
           updated_at?: string | null
+          time_period?: string | null // <--- NUEVO CAMPO
         }
         Relationships: []
       }
@@ -112,6 +115,7 @@ export type Database = {
       plays: {
         Row: {
           author: string
+          director: string | null // <--- NUEVO
           availability: string | null
           category: string
           created_at: string | null
@@ -128,6 +132,7 @@ export type Database = {
         }
         Insert: {
           author: string
+          director?: string | null // <--- NUEVO
           availability?: string | null
           category: string
           created_at?: string | null
@@ -144,6 +149,7 @@ export type Database = {
         }
         Update: {
           author?: string
+          director?: string | null // <--- NUEVO
           availability?: string | null
           category?: string
           created_at?: string | null
@@ -153,7 +159,7 @@ export type Database = {
           image?: string
           status?: string | null
           time?: string | null
-          title: string
+          title?: string
           updated_at?: string | null
           venue?: string | null
           year?: number | null

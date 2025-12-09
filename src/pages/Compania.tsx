@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Award, Heart, Lightbulb, Users, Globe, Sparkles, Quote } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyGallery from "@/components/CompanyGallery";
+import { BookOpen } from "lucide-react";
 
 // Imágenes estáticas
 import teamPhoto from "@/assets/team-photo.jpg";
@@ -261,6 +262,14 @@ const Compania = () => {
                 Nos define la convicción de que el teatro es un espacio para el pensamiento crítico y la emoción estética. Más que representar obras, buscamos crear experiencias que resuenen en la memoria del espectador, honrando nuestro pasado mientras construimos el futuro de la escena nacional.
               </p>
             </div>
+            <div className="pt-8 text-center">
+            <Link to="/historia">
+              <Button size="lg" variant="default" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
+                <BookOpen className="mr-2 h-5 w-5" />
+                Explorar Nuestra Historia Completa
+              </Button>
+            </Link>
+          </div>
           </div>
         </div>
       </section>

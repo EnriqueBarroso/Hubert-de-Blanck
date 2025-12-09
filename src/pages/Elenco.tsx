@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
-// 1. Importamos el componente Skeleton para mejorar la carga
+import ActorCard from "@/components/ActorCard";
 import { Skeleton } from "@/components/ui/skeleton";
-// 2. Importamos el tipo centralizado (Soluciona el error "Cannot find name Actor")
-import { Actor } from "@/types";
+import { Users } from "lucide-react";
+
+// Definición de la interfaz del Actor
+interface Actor {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+  time_period: string | null;
+}
 
 const Elenco = () => {
   const [actors, setActors] = useState<Actor[]>([]);
@@ -18,171 +25,107 @@ const Elenco = () => {
 
   const fetchActors = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from("actors")
         .select("*")
-        .order("name", { ascending: true });
+        .order("name"); // Orden alfabético dentro de cada grupo
 
       if (error) throw error;
       setActors(data || []);
-    } catch (error: unknown) {
-      // Manejo de errores más seguro que 'any'
-      console.error("Error fetching actors:", error);
+    } catch (error) {
+      console.error("Error cargando elenco:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 3. Nueva UI de carga con Skeletons (mucho más profesional)
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <section className="relative py-20 px-4">
-           {/* Hero Skeleton */}
-           <div className="container mx-auto max-w-4xl text-center relative z-10 pt-20 mb-16">
-             <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
-             <Skeleton className="h-6 w-1/2 mx-auto" />
-           </div>
+  // Lógica de Agrupación por Periodo
+  const groupedActors = actors.reduce((groups, actor) => {
+    // Si no tiene periodo, lo ponemos en "Sin Clasificar" o "General"
+    const period = actor.time_period || "General";
+    
+    if (!groups[period]) {
+      groups[period] = [];
+    }
+    groups[period].push(actor);
+    return groups;
+  }, {} as Record<string, Actor[]>);
 
-           {/* Grid Skeleton */}
-           <div className="container mx-auto max-w-6xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="rounded-lg border border-border bg-card p-0 overflow-hidden">
-                  <Skeleton className="w-full aspect-[3/4]" />
-                  <div className="p-6 space-y-4">
-                    <Skeleton className="h-8 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-3 w-full" />
-                      <Skeleton className="h-3 w-full" />
-                      <Skeleton className="h-3 w-4/5" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-    );
-  }
+  // Ordenar los periodos para mostrarlos
+  // "Actualidad" va primero, el resto se ordena como texto (descendente para años recientes primero)
+  const sortedPeriods = Object.keys(groupedActors).sort((a, b) => {
+    if (a === "Actualidad") return -1;
+    if (b === "Actualidad") return 1;
+    return b.localeCompare(a); 
+  });
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden pt-32">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
-        <div className="container mx-auto max-w-4xl text-center relative z-10">
-          <h1 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-6">
-            Nuestro Elenco
-          </h1>
-          <p className="font-outfit text-xl text-muted-foreground max-w-2xl mx-auto">
-            Conoce a los talentosos artistas que dan vida a nuestras producciones
-          </p>
-        </div>
+      {/* Header */}
+      <section className="pt-32 pb-12 bg-theater-darker text-center px-4">
+        <h1 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
+          Nuestro Elenco
+        </h1>
+        <p className="font-outfit text-xl text-muted-foreground max-w-2xl mx-auto">
+          Los rostros que dan vida a nuestras historias, desde los fundadores hasta la generación actual.
+        </p>
       </section>
 
-      {/* Actors Grid */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {actors.map((actor) => (
-              <article 
-                key={actor.id}
-                className="group relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300"
-              >
-                <div className="aspect-[3/4] overflow-hidden">
-                  <img
-                    src={actor.image}
-                    alt={actor.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                
-                <div className="p-6">
-                  <h3 className="font-playfair text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {actor.name}
-                  </h3>
-                  <p className="font-outfit text-sm text-secondary uppercase tracking-wider mb-3">
-                    {actor.role}
-                  </p>
-                  <p className="font-outfit text-sm text-muted-foreground line-clamp-3 mb-4">
-                    {actor.bio}
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    Ver biografía completa
-                  </Button>
-                </div>
-              </article>
+      {/* Listado por Grupos */}
+      <section className="py-16 px-4 container mx-auto">
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <Skeleton key={i} className="h-[400px] rounded-lg" />
             ))}
           </div>
-        </div>
-      </section>
+        ) : (
+          <div className="space-y-16">
+            {sortedPeriods.map((period) => (
+              <div key={period} className="space-y-8 animate-fade-in">
+                {/* Título del Periodo */}
+                <div className="flex items-center gap-4">
+                  <div className="h-px bg-border flex-grow"></div>
+                  <h2 className="font-playfair text-2xl md:text-3xl font-bold text-primary px-6 py-2 border border-primary/20 rounded-full bg-primary/5 uppercase tracking-wider">
+                    {period}
+                  </h2>
+                  <div className="h-px bg-border flex-grow"></div>
+                </div>
 
-      {/* CTA Section */}
-      <section className="py-16 px-4 bg-primary/5">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-4">
-            ¿Quieres formar parte del elenco?
-          </h2>
-          <p className="font-outfit text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Estamos siempre en búsqueda de nuevos talentos. Si te apasiona el teatro y crees que puedes aportar a nuestra compañía, nos encantaría conocerte.
-          </p>
-          <Button size="lg" className="font-outfit">
-            <Mail className="mr-2 h-5 w-5" />
-            Contáctanos
-          </Button>
-        </div>
-      </section>
+                {/* Grid de Actores */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {groupedActors[period].map((actor) => (
+                    <ActorCard
+                      key={actor.id}
+                      name={actor.name}
+                      role={actor.role}
+                      bio={actor.bio}
+                      image={actor.image}
+                      // Pasamos el periodo para que se muestre en la tarjeta
+                      timePeriod={actor.time_period || undefined} 
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
 
+            {actors.length === 0 && (
+              <div className="text-center py-20 border border-dashed border-border rounded-xl">
+                <Users className="h-16 w-16 mx-auto text-muted-foreground mb-4 opacity-50" />
+                <h3 className="font-playfair text-xl text-foreground mb-2">Sin registros</h3>
+                <p className="text-muted-foreground">No hay actores registrados en el sistema actualmente.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+      
       {/* Footer */}
-      <footer className="bg-card border-t border-border py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-playfair text-xl font-bold text-foreground mb-4">Compañía Hubert de Blanck</h3>
-              <p className="font-outfit text-sm text-muted-foreground">Teatro contemporáneo y vanguardista</p>
-            </div>
-            <div>
-              <h4 className="font-outfit font-bold text-foreground mb-4">Navegación</h4>
-              <ul className="space-y-2 font-outfit text-sm">
-                <li><a href="/" className="text-muted-foreground hover:text-primary transition-colors">Inicio</a></li>
-                <li><a href="/cartelera" className="text-muted-foreground hover:text-primary transition-colors">Cartelera</a></li>
-                <li><a href="/compania" className="text-muted-foreground hover:text-primary transition-colors">Compañía</a></li>
-                <li><a href="/elenco" className="text-muted-foreground hover:text-primary transition-colors">Elenco</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-outfit font-bold text-foreground mb-4">Contacto</h4>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li>Calle Calzada, 111</li>
-                <li>10400, Vedado, Cuba</li>
-                <li>+53 78 30 10 11</li>
-                <li>info@hubertdeblanck.com</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-outfit font-bold text-foreground mb-4">Síguenos</h4>
-              <p className="font-outfit text-sm text-muted-foreground">
-                Mantente al día con nuestras últimas producciones y novedades
-              </p>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-border text-center">
-            <p className="font-outfit text-sm text-muted-foreground">
-              © 2024 Compañía Hubert de Blanck. Todos los derechos reservados.
-            </p>
-          </div>
-        </div>
+      <footer className="bg-theater-darker py-8 border-t border-border mt-auto text-center">
+        <p className="font-outfit text-sm text-muted-foreground">© 2024 Compañía Hubert de Blanck.</p>
       </footer>
     </div>
   );

@@ -6,8 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, X, Loader2 } from "lucide-react";
-import { Actor, ActorInsert, ActorUpdate } from "@/types";
+import { Loader2, Upload } from "lucide-react";
+import { ActorInsert, ActorUpdate } from "@/types";
+
+// Definimos la interfaz localmente o impórtala si la tienes en types
+interface Actor {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+  time_period?: string | null; // Nuevo campo opcional
+}
 
 interface ActorDialogProps {
   open: boolean;
@@ -21,30 +31,30 @@ const ActorDialog = ({ open, onOpenChange, actor, onSuccess }: ActorDialogProps)
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   
-  const [formData, setFormData] = useState<ActorInsert>({
-    id: "",
+  const [formData, setFormData] = useState({
     name: "",
-    role: "Actor", // Valor por defecto
+    role: "",
     bio: "",
     image: "",
+    time_period: "Actualidad", // Valor por defecto
   });
 
   useEffect(() => {
     if (actor) {
       setFormData({
-        id: actor.id,
         name: actor.name,
         role: actor.role,
         bio: actor.bio,
         image: actor.image,
+        time_period: actor.time_period || "Actualidad",
       });
     } else {
       setFormData({
-        id: "",
         name: "",
-        role: "Actor",
+        role: "",
         bio: "",
         image: "",
+        time_period: "Actualidad",
       });
     }
   }, [actor, open]);
@@ -55,27 +65,23 @@ const ActorDialog = ({ open, onOpenChange, actor, onSuccess }: ActorDialogProps)
       if (!file) return;
 
       setUploading(true);
-      
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
-
+      
       const { error: uploadError } = await supabase.storage
         .from('actor-images')
-        .upload(filePath, file);
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
         .from('actor-images')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setFormData(prev => ({ ...prev, image: data.publicUrl }));
-      
-      toast({ title: "Foto subida", description: "La foto se ha cargado correctamente" });
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Error al subir imagen";
-      toast({ variant: "destructive", title: "Error", description: errorMessage });
+      toast({ title: "Imagen subida correctamente" });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
     } finally {
       setUploading(false);
     }
@@ -89,22 +95,21 @@ const ActorDialog = ({ open, onOpenChange, actor, onSuccess }: ActorDialogProps)
       if (actor) {
         const { error } = await supabase
           .from("actors")
-          .update(formData as ActorUpdate)
+          .update(formData as any) // Usamos any o actualiza tus tipos en 'types/index.ts'
           .eq("id", actor.id);
         if (error) throw error;
-        toast({ title: "Actor actualizado", description: "Datos guardados correctamente." });
+        toast({ title: "Actor actualizado" });
       } else {
         const { error } = await supabase
           .from("actors")
-          .insert([formData]);
+          .insert([formData as any]);
         if (error) throw error;
-        toast({ title: "Actor creado", description: "Actor añadido a la base de datos." });
+        toast({ title: "Actor creado" });
       }
       onSuccess();
       onOpenChange(false);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-      toast({ variant: "destructive", title: "Error", description: errorMessage });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
     } finally {
       setLoading(false);
     }
@@ -112,98 +117,53 @@ const ActorDialog = ({ open, onOpenChange, actor, onSuccess }: ActorDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>{actor ? "Editar Actor" : "Nuevo Actor"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label htmlFor="id">ID (slug) *</Label>
-                <Input
-                  id="id"
-                  value={formData.id}
-                  onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                  required
-                  disabled={!!actor}
-                  placeholder="ej: nombre-apellido"
-                />
+              <Label>Nombre *</Label>
+              <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="name">Nombre Completo *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
+              <Label>Rol (ej: Actor, Director) *</Label>
+              <Input value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} required />
             </div>
+          </div>
+          
+          {/* CAMPO NUEVO: PERIODO */}
+          <div className="space-y-2">
+            <Label>Periodo / Etapa *</Label>
+            <Input 
+                value={formData.time_period} 
+                onChange={e => setFormData({...formData, time_period: e.target.value})} 
+                placeholder="Ej: Actualidad, 2010-2019, Fundadores..."
+                required 
+            />
+            <p className="text-xs text-muted-foreground">Úsalo para agrupar actores por décadas o etapas.</p>
           </div>
 
           <div className="space-y-2">
-            <Label>Foto de Perfil</Label>
+            <Label>Biografía *</Label>
+            <Textarea value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} rows={5} required />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Foto</Label>
             <div className="flex items-center gap-4">
               {formData.image && (
-                <div className="relative w-20 h-20 rounded-full overflow-hidden border bg-muted">
-                  <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
-                    className="absolute top-0 right-0 p-1 bg-black/50 text-white hover:bg-black/70 rounded-full"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
+                <img src={formData.image} alt="Preview" className="w-12 h-12 object-cover rounded-full" />
               )}
-              <div className="flex-1">
-                <Label htmlFor="actor-image-upload" className="cursor-pointer">
-                  <div className="flex items-center justify-center w-full h-20 border-2 border-dashed rounded-md hover:bg-muted/50 transition-colors">
-                    {uploading ? (
-                      <Loader2 className="animate-spin text-muted-foreground" />
-                    ) : (
-                      <div className="flex flex-col items-center text-muted-foreground">
-                        <Upload size={20} />
-                        <span className="text-xs mt-1">Subir foto</span>
-                      </div>
-                    )}
-                  </div>
-                  <Input
-                    id="actor-image-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                  />
-                </Label>
-              </div>
+              <Input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="role">Rol Principal (Ej: Actriz, Director, Músico)</Label>
-            <Input
-              id="role"
-              value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bio">Biografía</Label>
-            <Textarea
-              id="bio"
-              value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              rows={5}
-            />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit" disabled={loading || uploading}>
-              {loading ? "Guardando..." : actor ? "Actualizar" : "Crear"}
+              {loading ? "Guardando..." : "Guardar"}
             </Button>
           </div>
         </form>

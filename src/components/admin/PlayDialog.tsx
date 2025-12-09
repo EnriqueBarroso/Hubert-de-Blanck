@@ -28,11 +28,12 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   
-  // Estado inicial tipado correctamente
+  // 1. AÑADIDO: campo director en el estado inicial
   const [formData, setFormData] = useState<PlayInsert>({
     id: "",
     title: "",
     author: "",
+    director: "", // <--- AQUÍ
     description: "",
     image: "",
     category: "",
@@ -46,10 +47,12 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
 
   useEffect(() => {
     if (play) {
+      // 2. AÑADIDO: cargar el director al editar
       setFormData({
         id: play.id,
         title: play.title,
         author: play.author,
+        director: play.director || "", // <--- AQUÍ
         description: play.description,
         image: play.image,
         category: play.category,
@@ -65,6 +68,7 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
         id: "",
         title: "",
         author: "",
+        director: "", // <--- AQUÍ
         description: "",
         image: "",
         category: "",
@@ -240,6 +244,7 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
             />
           </div>
 
+          {/* 3. MODIFICADO: Bloque con Autor, Director y Categoría */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="author">Autor *</Label>
@@ -251,18 +256,28 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category">Categoría *</Label>
+              <Label htmlFor="director">Director *</Label>
               <Input
-                id="category"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                id="director"
+                value={formData.director || ""}
+                onChange={(e) => setFormData({ ...formData, director: e.target.value })}
+                placeholder="Nombre del director"
                 required
-                placeholder="Teatro, Musical..."
               />
             </div>
           </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="category">Categoría *</Label>
+            <Input
+              id="category"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              required
+              placeholder="Teatro, Musical..."
+            />
+          </div>
 
-          {/* Sección de Estado y Lugar corregida e integrada */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Estado *</Label>
