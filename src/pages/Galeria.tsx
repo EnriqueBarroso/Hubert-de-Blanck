@@ -2,24 +2,25 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { GalleryItem, Play } from "@/types";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Maximize2, Filter, History, Drama, Building, Users, FolderOpen, ArrowLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Filter, History, Drama, Building, Users, FolderOpen, ArrowLeft } from "lucide-react";
+import ImageViewer from "@/components/ImageViewer"; // <--- IMPORTAMOS EL VISOR
 
 const Galeria = () => {
   const [images, setImages] = useState<GalleryItem[]>([]);
-  const [playsWithPhotos, setPlaysWithPhotos] = useState<Play[]>([]); // Obras que tienen álbum
+  const [playsWithPhotos, setPlaysWithPhotos] = useState<Play[]>([]);
   
-  // Estado de visualización
   const [viewMode, setViewMode] = useState<"albums" | "grid">("albums");
-  const [selectedPlayAlbum, setSelectedPlayAlbum] = useState<string | null>(null); // ID de la obra seleccionada
+  const [selectedPlayAlbum, setSelectedPlayAlbum] = useState<string | null>(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("Todos");
   
   const [loading, setLoading] = useState(true);
 
-  // Categorías generales
+  // ESTADO PARA EL VISOR DE IMÁGENES
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const filters = [
     { id: "Todos", label: "Todo", icon: Filter },
     { id: "Historia", label: "Historia", icon: History },
@@ -34,8 +35,6 @@ const Galeria = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // 1. Obtener todas las imágenes con info de la obra
       const { data: galleryData, error } = await supabase
         .from("gallery")
         .select(`*, play:plays(*)`)
@@ -46,8 +45,6 @@ const Galeria = () => {
       const allImages = (galleryData as unknown) as GalleryItem[] || [];
       setImages(allImages);
 
-      // 2. Extraer obras únicas que tienen fotos
-      // Usamos un Map para evitar duplicados
       const playsMap = new Map<string, Play>();
       allImages.forEach(img => {
         if (img.play) {
@@ -63,14 +60,11 @@ const Galeria = () => {
     }
   };
 
-  // Lógica de filtrado
+  // Obtenemos las imágenes FILTRADAS (son las que se mostrarán en el carrusel)
   const getFilteredImages = () => {
     if (selectedPlayAlbum) {
-      // Si estamos dentro de un álbum, mostramos solo fotos de esa obra
       return images.filter(img => img.play_id === selectedPlayAlbum);
     }
-    
-    // Si estamos en vista general, aplicamos filtros de categoría
     if (activeCategoryFilter === "Todos") return images;
     return images.filter(img => img.category === activeCategoryFilter);
   };
@@ -78,11 +72,16 @@ const Galeria = () => {
   const filteredImages = getFilteredImages();
   const currentPlayTitle = playsWithPhotos.find(p => p.id === selectedPlayAlbum)?.title;
 
+  // Función para abrir el visor en una foto específica
+  const openViewer = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsViewerOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
-      {/* Header */}
       <section className="pt-32 pb-12 bg-theater-darker">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
@@ -92,7 +91,6 @@ const Galeria = () => {
             35 años de historia. Navega por nuestras puestas en escena o explora nuestro archivo general.
           </p>
 
-          {/* Navegación Principal: Álbumes vs Todo */}
           {!selectedPlayAlbum && (
             <div className="flex justify-center gap-4 mb-8">
                 <Button 
@@ -116,7 +114,6 @@ const Galeria = () => {
         </div>
       </section>
 
-      {/* Contenido */}
       <section className="py-12 px-4 flex-grow">
         <div className="container mx-auto">
           
@@ -126,13 +123,11 @@ const Galeria = () => {
              </div>
           ) : (
             <>
-                {/* VISTA 1: ÁLBUMES DE OBRAS */}
+                {/* VISTA 1: ÁLBUMES */}
                 {viewMode === "albums" && !selectedPlayAlbum && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {playsWithPhotos.map(play => {
-                            // Encontrar la primera foto de esta obra para usar de portada
                             const coverImage = images.find(img => img.play_id === play.id)?.image_url;
-                            
                             return (
                                 <div 
                                     key={play.id} 
@@ -148,8 +143,6 @@ const Galeria = () => {
                                             </div>
                                         )}
                                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-                                        
-                                        {/* Badge de cantidad de fotos */}
                                         <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full font-outfit">
                                             {images.filter(i => i.play_id === play.id).length} fotos
                                         </div>
@@ -165,16 +158,15 @@ const Galeria = () => {
                         })}
                         {playsWithPhotos.length === 0 && (
                             <div className="col-span-full text-center py-20 text-muted-foreground">
-                                No hay álbumes de obras creados aún. Sube fotos vinculadas a una obra en el panel.
+                                No hay álbumes de obras creados aún.
                             </div>
                         )}
                     </div>
                 )}
 
-                {/* VISTA 2: REJILLA DE FOTOS (Dentro de un álbum o Vista General) */}
+                {/* VISTA 2: REJILLA DE FOTOS */}
                 {(viewMode === "grid" || selectedPlayAlbum) && (
                     <>
-                        {/* Cabecera de Navegación interna */}
                         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                             {selectedPlayAlbum ? (
                                 <Button 
@@ -186,7 +178,6 @@ const Galeria = () => {
                                     Volver a Álbumes
                                 </Button>
                             ) : (
-                                // Filtros de categoría solo si no estamos en un álbum específico
                                 <div className="flex flex-wrap gap-2">
                                     {filters.map(f => (
                                         <Button
@@ -209,31 +200,23 @@ const Galeria = () => {
                             )}
                         </div>
 
-                        {/* Grid Masonry */}
                         <div className="columns-1 md:columns-3 lg:columns-4 gap-4 space-y-4">
-                            {filteredImages.map((image) => (
-                                <Dialog key={image.id}>
-                                    <DialogTrigger asChild>
-                                        <div className="break-inside-avoid mb-4 group relative cursor-pointer overflow-hidden rounded-lg bg-card">
-                                            <img
-                                                src={image.image_url}
-                                                alt={image.title}
-                                                className="w-full h-auto object-cover hover:opacity-90 transition-opacity"
-                                                loading="lazy"
-                                            />
-                                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <p className="text-white text-sm font-playfair">{image.title}</p>
-                                            </div>
-                                        </div>
-                                    </DialogTrigger>
-                                    <DialogContent className="max-w-5xl bg-transparent border-none shadow-none p-0 flex justify-center">
-                                        <img
-                                            src={image.image_url}
-                                            alt={image.title}
-                                            className="w-auto h-auto max-h-[90vh] object-contain rounded-md"
-                                        />
-                                    </DialogContent>
-                                </Dialog>
+                            {filteredImages.map((image, index) => (
+                                <div 
+                                  key={image.id}
+                                  className="break-inside-avoid mb-4 group relative cursor-pointer overflow-hidden rounded-lg bg-card"
+                                  onClick={() => openViewer(index)} // <--- CLICK AQUÍ ABRE EL CAROUSEL
+                                >
+                                    <img
+                                        src={image.image_url}
+                                        alt={image.title}
+                                        className="w-full h-auto object-cover hover:opacity-90 transition-opacity"
+                                        loading="lazy"
+                                    />
+                                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p className="text-white text-sm font-playfair">{image.title}</p>
+                                    </div>
+                                </div>
                             ))}
                             {filteredImages.length === 0 && (
                                 <p className="text-muted-foreground col-span-full text-center py-10">
@@ -248,7 +231,14 @@ const Galeria = () => {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* COMPONENTE VISOR (MODAL CARRUSEL) */}
+      <ImageViewer 
+        images={filteredImages}
+        initialIndex={currentImageIndex}
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+      />
+
       <footer className="bg-theater-darker py-8 border-t border-border">
         <div className="container mx-auto text-center">
           <p className="font-outfit text-sm text-muted-foreground">
