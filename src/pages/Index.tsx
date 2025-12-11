@@ -1,42 +1,41 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
+import { useNavigate, Link } from "react-router-dom";
 import Hero from "@/components/Hero";
 import EventCard from "@/components/EventCard";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Play, GalleryItem } from "@/types";
+import { Play, BlogPost } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Mantenemos la imagen estática solo como respaldo (fallback) por si la BD está vacía
+// --- IMÁGENES FIJAS (IMPORTS) ---
 import theaterInterior from "@/assets/theater-interior.jpg";
-import eventMusical from "@/assets/event-musical.jpg";
+import eventMusical from "@/assets/event-musical.jpg"; 
 import eventContemporary from "@/assets/event-contemporary.jpg";
+import historyImg1 from "@/assets/history-1.jpg"; 
+import historyImg2 from "@/assets/history-2.jpg";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [upcomingEvents, setUpcomingEvents] = useState<Play[]>([]);
-  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
+  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Mantenemos tus títulos de blog que te gustan, pero haremos las imágenes dinámicas
-  const blogPostsStructure = [
+  // Datos estáticos para la sección de historia
+  const historyMilestones = [
     {
-      title: "El teatro como herramienta de transformación social en tiempos modernos",
-      excerpt: "Exploramos cómo el teatro contemporáneo refleja y transforma nuestra realidad",
-      fallbackImage: eventContemporary, // Imagen por defecto si no hay en galería
+      year: "1955",
+      title: "La Sala Original",
+      description: "Se inaugura la sala Hubert de Blanck, convirtiéndose rápidamente en un epicentro cultural del Vedado gracias a su acústica privilegiada.",
+      image: historyImg1,
     },
     {
-      title: "Detrás del telón: El proceso creativo de nuestras producciones musicales",
-      excerpt: "Un vistazo íntimo al trabajo que hay detrás de cada montaje",
-      fallbackImage: eventMusical,
-    },
-    {
-      title: "La importancia de los espacios teatrales independientes en la cultura actual",
-      excerpt: "Por qué los teatros como el nuestro son esenciales para la diversidad cultural",
-      fallbackImage: theaterInterior,
-    },
+      year: "1991",
+      title: "Nace la Compañía",
+      description: "Bajo la dirección de Orietta Medina y heredando el rigor de Teatro Estudio, se funda oficialmente la compañía que hoy conocemos.",
+      image: historyImg2,
+    }
   ];
 
   useEffect(() => {
@@ -44,25 +43,24 @@ const Index = () => {
       try {
         setLoading(true);
         
-        // 1. Cargar Obras en Cartelera (Máximo 3)
+        // 1. Cargar Obras en Cartelera
         const { data: playsData } = await supabase
           .from("plays")
           .select("*")
           .eq("status", "cartelera")
-          .order("date", { ascending: true }) // Ordenar por fecha (texto) por ahora
+          .order("date", { ascending: true })
           .limit(3);
         
         if (playsData) setUpcomingEvents(playsData);
 
-        // 2. Cargar Imágenes de la Galería para usarlas en las secciones
-        // Traemos las últimas 5 imágenes subidas para repartirlas en la home
-        const { data: galleryData } = await supabase
-          .from("gallery")
+        // 2. Cargar Blog
+        const { data: blogData } = await supabase
+          .from("blog_posts")
           .select("*")
-          .order("created_at", { ascending: false })
-          .limit(5);
+          .order("published_at", { ascending: false })
+          .limit(3);
 
-        if (galleryData) setGalleryImages(galleryData);
+        if (blogData) setRecentPosts((blogData as any) as BlogPost[]);
 
       } catch (error) {
         console.error("Error cargando datos del inicio:", error);
@@ -75,11 +73,11 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <>
+      {/* Hero se mantiene porque es contenido específico de la Home */}
       <Hero />
 
-      {/* Events Section with Emerald Accent */}
+      {/* 1. SECCIÓN CARTELERA */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-96 bg-primary -skew-y-12 transform translate-y-32 opacity-20 z-0" />
         
@@ -109,7 +107,6 @@ const Index = () => {
                     date={event.date || "Fecha por confirmar"}
                     image={event.image || "/placeholder.svg"}
                     category={event.category}
-                    // Lógica para asignar el color de la etiqueta según la categoría
                     categoryVariant={
                       event.category.toLowerCase().includes("musical") ? "musical" : 
                       event.category.toLowerCase().includes("taller") ? "workshop" : "contemporary"
@@ -140,7 +137,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* La Compañía Section */}
+      {/* 2. SECCIÓN LA COMPAÑÍA */}
       <section className="relative py-20 bg-theater-darker overflow-hidden">
         <div className="absolute bottom-0 left-0 w-1/2 h-96 bg-secondary -skew-y-12 transform -translate-y-32 opacity-20 z-0" />
         
@@ -173,18 +170,17 @@ const Index = () => {
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-background to-transparent z-10 lg:block hidden" />
-              {/* Usamos la primera imagen de la galería, o el fallback si no hay */}
               <img
-                src={galleryImages.length > 0 ? galleryImages[0].image_url : theaterInterior}
+                src={theaterInterior}
                 alt="Teatro Hubert de Blanck"
-                className="rounded-lg w-full h-[500px] object-cover"
+                className="rounded-lg w-full h-[500px] object-cover shadow-2xl"
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Blog Section with Copper Accent */}
+      {/* 3. SECCIÓN BLOG */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute top-0 left-0 w-1/2 h-96 bg-theater-copper -skew-y-12 transform translate-y-32 opacity-20 z-0" />
         
@@ -198,24 +194,37 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {blogPostsStructure.map((post, index) => {
-              // Intentamos usar imágenes de la galería (saltando la primera que usamos en Compañía)
-              // Si no hay suficientes imágenes en la galería, usamos la imagen fallback original
-              const dynamicImage = galleryImages.length > (index + 1) 
-                ? galleryImages[index + 1].image_url 
-                : post.fallbackImage;
-
-              return (
-                <BlogCard 
-                  key={index} 
-                  title={post.title}
-                  excerpt={post.excerpt}
-                  image={dynamicImage}
-                />
-              );
-            })}
-          </div>
+          {loading ? (
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+               {[1, 2, 3].map((i) => (
+                 <Skeleton key={i} className="aspect-[4/3] w-full rounded-lg" />
+               ))}
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {recentPosts.length > 0 ? (
+                recentPosts.map((post, index) => (
+                  <div 
+                    key={post.id} 
+                    onClick={() => navigate(`/blog/${post.id}`)}
+                    className="cursor-pointer h-full group"
+                  >
+                    <BlogCard 
+                      title={post.title}
+                      excerpt={post.excerpt}
+                      image={post.image || (index % 2 === 0 ? eventContemporary : eventMusical)} 
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-12 border border-dashed border-border rounded-lg">
+                  <p className="text-muted-foreground font-outfit">
+                    Próximamente publicaremos nuevos artículos y noticias.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="text-center">
             <Link to="/blog">
@@ -231,52 +240,61 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-theater-darker py-12 border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="font-playfair text-2xl font-bold tracking-wide mb-4">
-                <span className="text-primary">Hubert</span>
-                <span className="text-foreground"> de </span>
-                <span className="text-secondary">Blanck</span>
-              </div>
-              <p className="font-outfit text-sm text-muted-foreground">
-                Teatro contemporáneo y vanguardista
-              </p>
+      {/* 4. SECCIÓN HISTORIA */}
+      <section className="py-20 container mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div className="max-w-2xl">
+                <p className="font-outfit text-sm font-medium text-primary mb-2 tracking-widest uppercase">
+                    Nuestro Legado
+                </p>
+                <h2 className="font-playfair text-4xl md:text-5xl font-bold text-foreground mb-4">
+                    Historia Viva
+                </h2>
+                <p className="text-muted-foreground font-outfit">
+                    Desde los años 50 hasta la actualidad, un escenario testigo de la cultura cubana.
+                </p>
             </div>
-            <div>
-              <h3 className="font-outfit font-bold text-foreground mb-4">Navegación</h3>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li><Link to="/" className="hover:text-primary transition-colors">Inicio</Link></li>
-                <li><Link to="/cartelera" className="hover:text-primary transition-colors">Cartelera</Link></li>
-                <li><Link to="/compania" className="hover:text-primary transition-colors">La Compañía</Link></li>
-                <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-outfit font-bold text-foreground mb-4">Contacto</h3>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li>info@hubertdeblanck.com</li>
-                <li>+1 (555) 123-4567</li>
-                <li>La Habana, Cuba</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-outfit font-bold text-foreground mb-4">Síguenos</h3>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Instagram</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Facebook</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">YouTube</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-border pt-8 text-center font-outfit text-sm text-muted-foreground">
-            <p>&copy; 2024 Compañía Hubert de Blanck. Todos los derechos reservados.</p>
-          </div>
+            <Link to="/historia">
+                <Button variant="ghost" className="hidden md:flex font-outfit hover:text-primary">
+                    Leer historia completa <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </Link>
         </div>
-      </footer>
-    </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {historyMilestones.map((item, idx) => (
+                <div key={idx} className="group relative overflow-hidden rounded-xl border border-border/50 bg-card hover:shadow-xl transition-all duration-500">
+                    <div className="aspect-video overflow-hidden">
+                        <img 
+                            src={item.image} 
+                            alt={item.title} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
+                        />
+                    </div>
+                    <div className="p-8">
+                        <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-bold rounded-full mb-4 font-outfit">
+                            {item.year}
+                        </span>
+                        <h3 className="font-playfair text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
+                            {item.title}
+                        </h3>
+                        <p className="text-muted-foreground font-outfit leading-relaxed">
+                            {item.description}
+                        </p>
+                    </div>
+                </div>
+            ))}
+        </div>
+        
+        <div className="mt-8 text-center md:hidden">
+             <Link to="/historia">
+                <Button variant="outline" className="w-full font-outfit">
+                    Leer historia completa
+                </Button>
+            </Link>
+        </div>
+      </section>
+    </>
   );
 };
 

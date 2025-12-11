@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Calendar, User, Ticket } from "lucide-react";
+import { Calendar, User } from "lucide-react";
 import { Play } from "@/types";
 
 const Producciones = () => {
@@ -31,7 +30,6 @@ const Producciones = () => {
     const fetchPlays = async () => {
       try {
         setLoading(true);
-        // Buscamos SOLO las obras marcadas como "repertorio"
         const { data, error } = await supabase
           .from("plays")
           .select("*")
@@ -50,7 +48,6 @@ const Producciones = () => {
     fetchPlays();
   }, []);
   
-  // Filtrado local por categoría (opcional)
   const filteredPlays = selectedCategory === "all" 
     ? plays 
     : plays.filter(play => 
@@ -58,10 +55,7 @@ const Producciones = () => {
       );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Hero Section */}
+    <>
       <section className="relative pt-32 pb-20 px-4">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-background z-0" />
         <div className="container mx-auto relative z-10">
@@ -76,7 +70,6 @@ const Producciones = () => {
         </div>
       </section>
 
-      {/* Filter Section */}
       <section className="py-8 px-4 border-b border-border/50">
         <div className="container mx-auto">
           <div className="flex flex-wrap justify-center gap-3">
@@ -94,7 +87,6 @@ const Producciones = () => {
         </div>
       </section>
 
-      {/* Carousel Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
           {loading ? (
@@ -110,20 +102,13 @@ const Producciones = () => {
               </p>
             </div>
           ) : (
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
+            <Carousel opts={{ align: "start", loop: true }} className="w-full">
               <CarouselContent className="-ml-4">
                 {filteredPlays.map((play) => (
                   <CarouselItem key={play.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
                     <div className="group relative overflow-hidden rounded-lg aspect-[3/4] cursor-pointer border border-border/50">
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10 group-hover:from-black/90 transition-all duration-500" />
                       
-                      {/* IMAGEN DINÁMICA DE SUPABASE */}
                       <img
                         src={play.image || "/placeholder.svg"}
                         alt={play.title}
@@ -131,9 +116,7 @@ const Producciones = () => {
                       />
                       
                       <div className="absolute top-4 left-4 z-20">
-                        <Badge 
-                          className="font-outfit uppercase font-bold text-xs px-3 py-1 bg-secondary text-secondary-foreground"
-                        >
+                        <Badge className="font-outfit uppercase font-bold text-xs px-3 py-1 bg-secondary text-secondary-foreground">
                           {play.category}
                         </Badge>
                       </div>
@@ -180,15 +163,7 @@ const Producciones = () => {
           )}
         </div>
       </section>
-
-      <footer className="bg-theater-darker py-12 border-t border-border">
-        <div className="container mx-auto px-4 text-center">
-            <p className="font-outfit text-sm text-muted-foreground">
-                © 2024 Compañía Hubert de Blanck.
-            </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

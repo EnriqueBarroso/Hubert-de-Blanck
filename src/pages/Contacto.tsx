@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,18 +23,12 @@ const Contacto = () => {
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    },
+    defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
     try {
-      // Simulate form submission
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log("Form data:", data);
       toast.success("¡Mensaje enviado! Nos pondremos en contacto contigo pronto.");
@@ -48,10 +41,7 @@ const Contacto = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Hero Section */}
+    <>
       <section className="pt-32 pb-16 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <h1 className="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6">
@@ -63,11 +53,9 @@ const Contacto = () => {
         </div>
       </section>
 
-      {/* Contact Content */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
-            {/* Contact Information */}
             <div className="space-y-8">
               <div>
                 <h2 className="font-playfair text-3xl font-bold text-foreground mb-6">
@@ -98,9 +86,7 @@ const Contacto = () => {
                   </div>
                   <div>
                     <h3 className="font-outfit font-semibold text-foreground mb-1">Teléfono</h3>
-                    <p className="text-muted-foreground">
-                      +53 7 832 4721
-                    </p>
+                    <p className="text-muted-foreground">+53 7 832 4721</p>
                   </div>
                 </div>
 
@@ -110,14 +96,11 @@ const Contacto = () => {
                   </div>
                   <div>
                     <h3 className="font-outfit font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground">
-                      info@hubertdeblanck.cu
-                    </p>
+                    <p className="text-muted-foreground">info@hubertdeblanck.cu</p>
                   </div>
                 </div>
               </div>
 
-              {/* Social Media */}
               <div className="pt-6 border-t border-border">
                 <h3 className="font-outfit font-semibold text-foreground mb-4">Síguenos</h3>
                 <div className="flex gap-4">
@@ -134,7 +117,6 @@ const Contacto = () => {
               </div>
             </div>
 
-            {/* Contact Form */}
             <div className="bg-card border border-border rounded-lg p-8">
               <h2 className="font-playfair text-2xl font-bold text-foreground mb-6">
                 Envíanos un <span className="text-secondary">Mensaje</span>
@@ -155,7 +137,6 @@ const Contacto = () => {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="email"
@@ -169,7 +150,6 @@ const Contacto = () => {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="subject"
@@ -183,7 +163,6 @@ const Contacto = () => {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="message"
@@ -191,22 +170,13 @@ const Contacto = () => {
                       <FormItem>
                         <FormLabel>Mensaje</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Escribe tu mensaje aquí..." 
-                            className="min-h-[150px]"
-                            {...field} 
-                          />
+                          <Textarea placeholder="Escribe tu mensaje aquí..." className="min-h-[150px]" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={isSubmitting}
-                  >
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting ? "Enviando..." : "Enviar Mensaje"}
                   </Button>
                 </form>
@@ -216,7 +186,6 @@ const Contacto = () => {
         </div>
       </section>
 
-      {/* Map Section */}
       <section className="py-16 px-4 bg-card">
         <div className="container mx-auto max-w-6xl">
           <div className="aspect-video rounded-lg overflow-hidden border border-border">
@@ -232,16 +201,7 @@ const Contacto = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-12 px-4 border-t border-border">
-        <div className="container mx-auto text-center">
-          <p className="text-muted-foreground">
-            © 2024 Compañía Hubert de Blanck. Todos los derechos reservados.
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

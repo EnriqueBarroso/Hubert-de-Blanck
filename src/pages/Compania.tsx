@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, Heart, Lightbulb, Users, Globe, Sparkles, Quote } from "lucide-react";
+import { Award, Heart, Lightbulb, Users, Globe, Sparkles, Quote, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyGallery from "@/components/CompanyGallery";
-import { BookOpen } from "lucide-react";
 
 // Imágenes estáticas
 import teamPhoto from "@/assets/team-photo.jpg";
@@ -15,7 +13,6 @@ import history2 from "@/assets/history-2.jpg";
 import theaterInterior from "@/assets/theater-interior.jpg";
 
 const Compania = () => {
-  // Estado para la foto del equipo (dinámica o estática por defecto)
   const [teamPhotoUrl, setTeamPhotoUrl] = useState<string>(teamPhoto);
 
   useEffect(() => {
@@ -136,9 +133,7 @@ const Compania = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <>
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-theater-darker via-background to-background z-0" />
@@ -434,53 +429,7 @@ const Compania = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-theater-darker py-12 border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="font-playfair text-2xl font-bold tracking-wide mb-4">
-                <span className="text-primary">Hubert</span>
-                <span className="text-foreground"> de </span>
-                <span className="text-secondary">Blanck</span>
-              </div>
-              <p className="font-outfit text-sm text-muted-foreground">
-                Teatro contemporáneo y vanguardista
-              </p>
-            </div>
-            <div>
-              <h3 className="font-outfit font-bold text-foreground mb-4">Navegación</h3>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li><Link to="/" className="hover:text-primary transition-colors">Inicio</Link></li>
-                <li><Link to="/cartelera" className="hover:text-primary transition-colors">Cartelera</Link></li>
-                <li><Link to="/compania" className="hover:text-primary transition-colors">La Compañía</Link></li>
-                <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-outfit font-bold text-foreground mb-4">Contacto</h3>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li>info@hubertdeblanck.com</li>
-                <li>+1 (555) 123-4567</li>
-                <li>La Habana, Cuba</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-outfit font-bold text-foreground mb-4">Síguenos</h3>
-              <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Instagram</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Facebook</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">YouTube</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-border pt-8 text-center font-outfit text-sm text-muted-foreground">
-            <p>&copy; 2024 Compañía Hubert de Blanck. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

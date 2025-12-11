@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
-import { Skeleton } from "@/components/ui/skeleton"; // Importamos Skeleton
+import { Skeleton } from "@/components/ui/skeleton"; 
 import {
   Dialog,
   DialogContent,
@@ -27,17 +26,16 @@ import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Play } from "@/types"; // Usamos tus tipos centralizados
+import { Play } from "@/types";
 
-// Tipos locales para la vista (adaptadores)
 type EventType = "Todos" | "Teatro" | "Musical" | "Taller" | "Contemporáneo";
 
 interface EventView extends Omit<Play, 'id'> {
   id: string;
   type: EventType;
-  dateObj: Date; // Usamos esto para el calendario
-  price: number; // Campo simulado
-  availableSeats: number; // Campo simulado
+  dateObj: Date;
+  price: number;
+  availableSeats: number;
 }
 
 const Cartelera = () => {
@@ -46,7 +44,6 @@ const Cartelera = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventView | null>(null);
   const [ticketQuantity, setTicketQuantity] = useState(1);
 
-  // Estado para datos y carga
   const [events, setEvents] = useState<EventView[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,24 +56,16 @@ const Cartelera = () => {
       const { data, error } = await supabase
         .from("plays")
         .select("*")
-        // CAMBIO: Filtramos estrictamente por el estado 'cartelera'
         .eq('status', 'cartelera');
 
       if (error) throw error;
 
-      // Adaptador: Transformamos los datos de la DB al formato que necesita la vista
       const adaptedEvents: EventView[] = (data || []).map((play) => {
-        // Intento de parsear la fecha.
-        // NOTA: Para una app profesional, el campo 'date' en DB debería ser tipo DATE o TIMESTAMP, no texto.
-        // Aquí asumimos que si falla el parseo, usamos la fecha actual o futura.
         let parsedDate = new Date();
-
-        // Si tienes fechas en formato ISO (YYYY-MM-DD) en tu campo de texto, esto funcionará:
         if (play.date && isValid(parseISO(play.date))) {
           parsedDate = parseISO(play.date);
         }
 
-        // Normalización de categorías
         let type: EventType = "Teatro";
         const cat = play.category?.toLowerCase() || "";
         if (cat.includes("musical")) type = "Musical";
@@ -88,10 +77,8 @@ const Cartelera = () => {
           id: play.id,
           type: type,
           dateObj: parsedDate,
-          // Valores por defecto ya que no existen en la DB aún
           price: 25,
           availableSeats: 45,
-          // Aseguramos que los campos obligatorios tengan valor
           title: play.title || "Título no disponible",
           image: play.image || "/placeholder.svg",
           description: play.description || "",
@@ -111,13 +98,8 @@ const Cartelera = () => {
 
   const filteredEvents = events.filter((event) => {
     const matchesType = filterType === "Todos" || event.type === filterType;
-    // Filtro de fecha: Coincidencia exacta o si no hay fecha seleccionada
-    // Nota: Al ser fechas simuladas/texto, este filtro puede ser estricto.
-    // Para UX, si no hay eventos en la fecha exacta, podrías mostrar los del mes.
     const matchesDate = !selectedDate ||
       format(event.dateObj, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
-
-    // Si no hay fecha en DB real, mostramos todo para no dejar la pantalla vacía en este demo
     return matchesType;
   });
 
@@ -126,7 +108,6 @@ const Cartelera = () => {
   const handleReservation = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedEvent) {
-      // AQUÍ IRÍA LA LÓGICA DE GUARDAR EN SUPABASE (Tabla 'reservations')
       toast.success("Reserva confirmada", {
         description: `${ticketQuantity} entrada(s) para ${selectedEvent.title} el ${format(selectedEvent.dateObj, "d 'de' MMMM", { locale: es })}`,
       });
@@ -150,9 +131,7 @@ const Cartelera = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <>
       {/* Header */}
       <section className="pt-32 pb-16 bg-gradient-to-b from-theater-darker to-background">
         <div className="container mx-auto px-4">
@@ -218,7 +197,7 @@ const Cartelera = () => {
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="font-playfair text-2xl font-bold text-foreground">
                   {selectedDate
-                    ? `Eventos disponibles` // Simplificado para no confundir si la fecha no coincide exacto por ahora
+                    ? `Eventos disponibles`
                     : "Todos los eventos"}
                 </h3>
                 <Badge variant="outline" className="font-outfit">
@@ -228,7 +207,6 @@ const Cartelera = () => {
 
               <div className="space-y-6">
                 {loading ? (
-                  // SKELETON LOADING
                   Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="bg-card rounded-lg border border-border overflow-hidden h-64 flex">
                       <Skeleton className="w-1/3 h-full" />
@@ -294,7 +272,6 @@ const Cartelera = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                               <div className="flex items-center gap-2 text-sm font-outfit">
                                 <CalendarIcon className="h-4 w-4 text-primary" />
-                                {/* Mostramos la fecha original de texto si existe, o la parseada */}
                                 <span>{event.date || format(event.dateObj, "d MMM yyyy", { locale: es })}</span>
                               </div>
                               <div className="flex items-center gap-2 text-sm font-outfit">
@@ -394,16 +371,7 @@ const Cartelera = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-theater-darker py-12 border-t border-border mt-20">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-muted-foreground font-outfit text-sm">
-            &copy; 2024 Compañía Hubert de Blanck.
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { Play } from "@/types";
 interface CastMember {
   id: string;
   name: string;
-  role: string; // Nombre del personaje
+  role: string;
   bio: string;
   image: string;
 }
@@ -24,15 +23,12 @@ const ProduccionDetalle = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      fetchPlayAndCast();
-    }
+    if (id) fetchPlayAndCast();
   }, [id]);
 
   const fetchPlayAndCast = async () => {
     try {
       setLoading(true);
-      // 1. Cargar la Obra
       const { data: playData, error: playError } = await supabase
         .from("plays")
         .select("*")
@@ -42,28 +38,21 @@ const ProduccionDetalle = () => {
       if (playError) throw playError;
       setPlay(playData);
 
-      // 2. Cargar el Elenco con sus Personajes
       if (playData) {
         const { data: castData, error: castError } = await supabase
           .from("play_actors")
           .select(`
             character_name,
-            actor:actors (
-              id,
-              name,
-              bio,
-              image
-            )
+            actor:actors (id, name, bio, image)
           `)
           .eq("play_id", playData.id);
 
         if (castError) throw castError;
 
-        // Formatear datos para el componente ActorCard
         const formattedCast: CastMember[] = (castData || []).map((item: any) => ({
           id: item.actor.id,
           name: item.actor.name,
-          role: item.character_name, // Mostramos el personaje, no el rol general
+          role: item.character_name,
           bio: item.actor.bio,
           image: item.actor.image
         }));
@@ -79,44 +68,36 @@ const ProduccionDetalle = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <>
         <section className="relative h-[70vh] w-full bg-muted animate-pulse" />
         <div className="container mx-auto px-4 py-12 space-y-8">
             <Skeleton className="h-12 w-1/2" />
             <Skeleton className="h-32 w-full" />
         </div>
-      </div>
+      </>
     );
   }
 
   if (!play) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-32 text-center">
-          <h1 className="font-playfair text-4xl font-bold mb-4 text-foreground">
-            Producción no encontrada
-          </h1>
-          <Link to="/producciones">
-            <Button variant="outline" className="font-outfit">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver al Repertorio
-            </Button>
-          </Link>
-        </div>
+      <div className="container mx-auto px-4 py-32 text-center">
+        <h1 className="font-playfair text-4xl font-bold mb-4 text-foreground">
+          Producción no encontrada
+        </h1>
+        <Link to="/producciones">
+          <Button variant="outline" className="font-outfit">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al Repertorio
+          </Button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Hero Section */}
+    <>
       <section className="relative h-[70vh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-black/30 z-10" />
-        {/* IMAGEN DE FONDO DE SUPABASE */}
         <img
           src={play.image || "/placeholder.svg"}
           alt={play.title}
@@ -160,7 +141,6 @@ const ProduccionDetalle = () => {
                 <span className="text-lg font-medium">{play.author}</span>
               </div>
               
-              {/* Director (Si existe) */}
               {play.director && (
                 <div className="flex items-center gap-2">
                   <Megaphone className="h-5 w-5 text-primary" />
@@ -179,7 +159,6 @@ const ProduccionDetalle = () => {
         </div>
       </section>
 
-      {/* Contenido */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
           <h2 className="font-playfair text-4xl font-bold mb-6 text-foreground">
@@ -189,7 +168,6 @@ const ProduccionDetalle = () => {
             {play.description}
           </p>
 
-          {/* Información de Función (Solo si está en cartelera) */}
           {play.status === 'cartelera' && (
             <div className="bg-card/50 backdrop-blur border border-border/50 rounded-xl p-8 mb-16 shadow-lg">
               <div className="flex items-center justify-between mb-6">
@@ -236,7 +214,6 @@ const ProduccionDetalle = () => {
                 </div>
               </div>
 
-              {/* Botón informativo de taquilla */}
               <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row justify-end items-center gap-4">
                 <p className="text-sm text-muted-foreground font-outfit italic">
                    * Entradas disponibles directamente en taquilla
@@ -251,7 +228,6 @@ const ProduccionDetalle = () => {
         </div>
       </section>
 
-      {/* Reparto Dinámico */}
       {cast.length > 0 && (
         <section className="py-20 px-4 bg-muted/30 border-t border-border/50">
             <div className="container mx-auto max-w-6xl">
@@ -269,7 +245,7 @@ const ProduccionDetalle = () => {
                     <ActorCard
                         key={actor.id}
                         name={actor.name}
-                        role={actor.role} // Muestra el PERSONAJE
+                        role={actor.role}
                         bio={actor.bio}
                         image={actor.image}
                     />
@@ -278,16 +254,7 @@ const ProduccionDetalle = () => {
             </div>
         </section>
       )}
-
-      {/* Footer */}
-      <footer className="border-t border-border/50 py-8 px-4 mt-12">
-        <div className="container mx-auto text-center">
-          <p className="font-outfit text-sm text-muted-foreground">
-            © 2024 Compañía Hubert de Blanck. Todos los derechos reservados.
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

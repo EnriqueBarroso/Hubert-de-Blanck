@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import BlogCard from "@/components/BlogCard"; // Asegúrate de que este componente acepte props
+import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BlogPost } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "react-router-dom"; // Importamos useNavigate
 
 const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const navigate = useNavigate();
 
   const categories = ["Todos", "Noticias", "Críticas", "Entrevistas", "Historia"];
 
@@ -45,10 +46,7 @@ const Blog = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Header */}
+    <>
       <section className="pt-32 pb-16 bg-theater-darker">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-6">
@@ -58,7 +56,6 @@ const Blog = () => {
             Mantente al día con las últimas novedades, críticas y entrevistas de la Compañía Hubert de Blanck.
           </p>
 
-          {/* Search and Filter */}
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
@@ -87,7 +84,6 @@ const Blog = () => {
         </div>
       </section>
 
-      {/* Blog Grid */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
           {loading ? (
@@ -107,29 +103,23 @@ const Blog = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPosts.map((post) => (
-                <BlogCard
-                  key={post.id}
-                  title={post.title}
-                  image={post.image || "/placeholder.svg"}
-                  excerpt={post.excerpt}
-                  // Pasamos fecha si el componente BlogCard lo soporta, si no, puedes modificar BlogCard
-                  // date={new Date(post.published_at).toLocaleDateString()} 
-                />
+                <div 
+                  key={post.id} 
+                  onClick={() => navigate(`/blog/${post.id}`)}
+                  className="cursor-pointer h-full group"
+                >
+                  <BlogCard
+                    title={post.title}
+                    image={post.image || "/placeholder.svg"}
+                    excerpt={post.excerpt}
+                  />
+                </div>
               ))}
             </div>
           )}
         </div>
       </section>
-
-      {/* Footer Simple */}
-      <footer className="bg-theater-darker py-8 border-t border-border">
-        <div className="container mx-auto text-center">
-          <p className="font-outfit text-sm text-muted-foreground">
-            © 2024 Compañía Hubert de Blanck.
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

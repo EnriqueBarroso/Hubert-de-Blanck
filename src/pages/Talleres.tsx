@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +28,6 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Workshop } from "@/types";
 
-// Schema de validación para el formulario
 const enrollmentSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100),
   email: z.string().trim().email("Email inválido").max(255),
@@ -44,7 +42,6 @@ const Talleres = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>("Todos");
   const [selectedWorkshop, setSelectedWorkshop] = useState<Workshop | null>(null);
   
-  // Estado del formulario
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -91,32 +88,19 @@ const Talleres = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       enrollmentSchema.parse(formData);
-      
       if (selectedWorkshop) {
-        // AQUÍ: En el futuro conectarías esto con una tabla 'enrollments' en Supabase
-        // Por ahora simulamos el éxito
         toast.success("¡Solicitud enviada!", {
           description: `Has solicitado plaza en "${selectedWorkshop.title}". Te contactaremos al ${formData.phone} para finalizar la matrícula.`,
         });
-        
         setSelectedWorkshop(null);
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          experience: "",
-          motivation: "",
-        });
+        setFormData({ name: "", email: "", phone: "", experience: "", motivation: "" });
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const firstError = error.errors[0];
-        toast.error("Error en el formulario", {
-          description: firstError.message,
-        });
+        toast.error("Error en el formulario", { description: firstError.message });
       }
     }
   };
@@ -126,9 +110,7 @@ const Talleres = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <>
       {/* Hero Section */}
       <section className="relative pt-32 pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-theater-darker via-background to-background z-0" />
@@ -224,15 +206,10 @@ const Talleres = () => {
                       <Badge className={getLevelColor(workshop.level)}>
                         {workshop.level}
                       </Badge>
-                      {/* Lógica de estado del cupo */}
                       {workshop.enrolled >= workshop.max_students ? (
-                        <Badge variant="destructive" className="font-outfit">
-                          Cupo Lleno
-                        </Badge>
+                        <Badge variant="destructive" className="font-outfit">Cupo Lleno</Badge>
                       ) : (
-                        <Badge variant="secondary" className="font-outfit">
-                          {workshop.enrolled}/{workshop.max_students} inscritos
-                        </Badge>
+                        <Badge variant="secondary" className="font-outfit">{workshop.enrolled}/{workshop.max_students} inscritos</Badge>
                       )}
                     </div>
                   </div>
@@ -268,9 +245,7 @@ const Talleres = () => {
 
                     {workshop.features && workshop.features.length > 0 && (
                       <div className="border-t border-border pt-4">
-                        <h4 className="font-outfit text-sm font-semibold text-foreground mb-2">
-                          Lo que aprenderás:
-                        </h4>
+                        <h4 className="font-outfit text-sm font-semibold text-foreground mb-2">Lo que aprenderás:</h4>
                         <ul className="space-y-1">
                           {workshop.features.slice(0, 3).map((feature, index) => (
                             <li key={index} className="flex items-start gap-2 text-sm font-outfit text-muted-foreground">
@@ -285,9 +260,7 @@ const Talleres = () => {
                     <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
                       <div>
                         <p className="font-outfit text-xs text-muted-foreground">Matrícula</p>
-                        <p className="font-playfair text-3xl font-bold text-foreground">
-                          ${workshop.price}
-                        </p>
+                        <p className="font-playfair text-3xl font-bold text-foreground">${workshop.price}</p>
                       </div>
 
                       <Dialog>
@@ -302,15 +275,10 @@ const Talleres = () => {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle className="font-playfair text-3xl">
-                              {workshop.title}
-                            </DialogTitle>
-                            <DialogDescription className="font-outfit text-base">
-                              Completa el formulario para inscribirte
-                            </DialogDescription>
+                            <DialogTitle className="font-playfair text-3xl">{workshop.title}</DialogTitle>
+                            <DialogDescription className="font-outfit text-base">Completa el formulario para inscribirte</DialogDescription>
                           </DialogHeader>
 
-                          {/* Workshop Details in Dialog */}
                           <div className="bg-muted p-4 rounded-lg space-y-3">
                             <div className="grid grid-cols-2 gap-3">
                               <div className="flex items-center gap-2 text-sm font-outfit">
@@ -333,87 +301,30 @@ const Talleres = () => {
                             </p>
                           </div>
 
-                          {/* Enrollment Form */}
                           <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
-                                <Label htmlFor="name" className="font-outfit">
-                                  Nombre completo *
-                                </Label>
-                                <Input
-                                  id="name"
-                                  value={formData.name}
-                                  onChange={(e) => handleInputChange("name", e.target.value)}
-                                  placeholder="Tu nombre"
-                                  required
-                                  className="font-outfit"
-                                />
+                                <Label htmlFor="name" className="font-outfit">Nombre completo *</Label>
+                                <Input id="name" value={formData.name} onChange={(e) => handleInputChange("name", e.target.value)} placeholder="Tu nombre" required className="font-outfit" />
                               </div>
                               <div className="space-y-2">
-                                <Label htmlFor="email" className="font-outfit">
-                                  Correo electrónico *
-                                </Label>
-                                <Input
-                                  id="email"
-                                  type="email"
-                                  value={formData.email}
-                                  onChange={(e) => handleInputChange("email", e.target.value)}
-                                  placeholder="tu@email.com"
-                                  required
-                                  className="font-outfit"
-                                />
+                                <Label htmlFor="email" className="font-outfit">Correo electrónico *</Label>
+                                <Input id="email" type="email" value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} placeholder="tu@email.com" required className="font-outfit" />
                               </div>
                             </div>
-
                             <div className="space-y-2">
-                              <Label htmlFor="phone" className="font-outfit">
-                                Teléfono *
-                              </Label>
-                              <Input
-                                id="phone"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={(e) => handleInputChange("phone", e.target.value)}
-                                placeholder="+53 5555 5555"
-                                required
-                                className="font-outfit"
-                              />
+                              <Label htmlFor="phone" className="font-outfit">Teléfono *</Label>
+                              <Input id="phone" type="tel" value={formData.phone} onChange={(e) => handleInputChange("phone", e.target.value)} placeholder="+53 5555 5555" required className="font-outfit" />
                             </div>
-
                             <div className="space-y-2">
-                              <Label htmlFor="experience" className="font-outfit">
-                                Experiencia previa en teatro *
-                              </Label>
-                              <Textarea
-                                id="experience"
-                                value={formData.experience}
-                                onChange={(e) => handleInputChange("experience", e.target.value)}
-                                placeholder="Cuéntanos sobre tu experiencia..."
-                                required
-                                className="font-outfit min-h-[100px]"
-                              />
+                              <Label htmlFor="experience" className="font-outfit">Experiencia previa en teatro *</Label>
+                              <Textarea id="experience" value={formData.experience} onChange={(e) => handleInputChange("experience", e.target.value)} placeholder="Cuéntanos sobre tu experiencia..." required className="font-outfit min-h-[100px]" />
                             </div>
-
                             <div className="space-y-2">
-                              <Label htmlFor="motivation" className="font-outfit">
-                                ¿Por qué quieres tomar este taller? *
-                              </Label>
-                              <Textarea
-                                id="motivation"
-                                value={formData.motivation}
-                                onChange={(e) => handleInputChange("motivation", e.target.value)}
-                                placeholder="Comparte tus objetivos..."
-                                required
-                                className="font-outfit min-h-[100px]"
-                              />
+                              <Label htmlFor="motivation" className="font-outfit">¿Por qué quieres tomar este taller? *</Label>
+                              <Textarea id="motivation" value={formData.motivation} onChange={(e) => handleInputChange("motivation", e.target.value)} placeholder="Comparte tus objetivos..." required className="font-outfit min-h-[100px]" />
                             </div>
-
-                            <Button
-                              type="submit"
-                              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-outfit"
-                            >
-                              Confirmar solicitud de plaza
-                            </Button>
+                            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-outfit">Confirmar solicitud de plaza</Button>
                           </form>
                         </DialogContent>
                       </Dialog>
@@ -425,16 +336,7 @@ const Talleres = () => {
           )}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-theater-darker py-12 border-t border-border">
-        <div className="container mx-auto px-4">
-            <p className="text-center text-muted-foreground font-outfit text-sm">
-                &copy; 2024 Compañía Hubert de Blanck. Todos los derechos reservados.
-            </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

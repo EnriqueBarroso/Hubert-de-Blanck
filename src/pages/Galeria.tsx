@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { GalleryItem, Play } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Filter, History, Drama, Building, Users, FolderOpen, ArrowLeft } from "lucide-react";
-import ImageViewer from "@/components/ImageViewer"; // <--- IMPORTAMOS EL VISOR
+import ImageViewer from "@/components/ImageViewer";
 
 const Galeria = () => {
   const [images, setImages] = useState<GalleryItem[]>([]);
@@ -16,8 +15,6 @@ const Galeria = () => {
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("Todos");
   
   const [loading, setLoading] = useState(true);
-
-  // ESTADO PARA EL VISOR DE IMÁGENES
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -47,9 +44,7 @@ const Galeria = () => {
 
       const playsMap = new Map<string, Play>();
       allImages.forEach(img => {
-        if (img.play) {
-          playsMap.set(img.play.id, img.play);
-        }
+        if (img.play) playsMap.set(img.play.id, img.play);
       });
       setPlaysWithPhotos(Array.from(playsMap.values()));
 
@@ -60,7 +55,6 @@ const Galeria = () => {
     }
   };
 
-  // Obtenemos las imágenes FILTRADAS (son las que se mostrarán en el carrusel)
   const getFilteredImages = () => {
     if (selectedPlayAlbum) {
       return images.filter(img => img.play_id === selectedPlayAlbum);
@@ -72,16 +66,13 @@ const Galeria = () => {
   const filteredImages = getFilteredImages();
   const currentPlayTitle = playsWithPhotos.find(p => p.id === selectedPlayAlbum)?.title;
 
-  // Función para abrir el visor en una foto específica
   const openViewer = (index: number) => {
     setCurrentImageIndex(index);
     setIsViewerOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Navbar />
-      
+    <>
       <section className="pt-32 pb-12 bg-theater-darker">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
@@ -116,14 +107,12 @@ const Galeria = () => {
 
       <section className="py-12 px-4 flex-grow">
         <div className="container mx-auto">
-          
           {loading ? (
              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[1,2,3,4].map(i => <Skeleton key={i} className="aspect-square rounded-lg" />)}
              </div>
           ) : (
             <>
-                {/* VISTA 1: ÁLBUMES */}
                 {viewMode === "albums" && !selectedPlayAlbum && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {playsWithPhotos.map(play => {
@@ -164,7 +153,6 @@ const Galeria = () => {
                     </div>
                 )}
 
-                {/* VISTA 2: REJILLA DE FOTOS */}
                 {(viewMode === "grid" || selectedPlayAlbum) && (
                     <>
                         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -205,7 +193,7 @@ const Galeria = () => {
                                 <div 
                                   key={image.id}
                                   className="break-inside-avoid mb-4 group relative cursor-pointer overflow-hidden rounded-lg bg-card"
-                                  onClick={() => openViewer(index)} // <--- CLICK AQUÍ ABRE EL CAROUSEL
+                                  onClick={() => openViewer(index)}
                                 >
                                     <img
                                         src={image.image_url}
@@ -231,22 +219,13 @@ const Galeria = () => {
         </div>
       </section>
 
-      {/* COMPONENTE VISOR (MODAL CARRUSEL) */}
       <ImageViewer 
         images={filteredImages}
         initialIndex={currentImageIndex}
         isOpen={isViewerOpen}
         onClose={() => setIsViewerOpen(false)}
       />
-
-      <footer className="bg-theater-darker py-8 border-t border-border">
-        <div className="container mx-auto text-center">
-          <p className="font-outfit text-sm text-muted-foreground">
-            © 2024 Compañía Hubert de Blanck.
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

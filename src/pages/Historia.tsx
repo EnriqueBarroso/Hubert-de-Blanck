@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { GalleryItem, BlogPost } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,9 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { BookOpen, Building, User, Calendar, Quote } from "lucide-react";
-
-// Puedes usar una imagen de archivo para el header
+import { BookOpen, Building, User, Calendar } from "lucide-react";
 import historyHeader from "@/assets/history-1.jpg"; 
 
 const Historia = () => {
@@ -21,8 +18,6 @@ const Historia = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        // 1. Cargar fotos de categoría "Historia"
         const { data: galleryData } = await supabase
           .from("gallery")
           .select("*")
@@ -32,8 +27,6 @@ const Historia = () => {
         
         if (galleryData) setHistoricalPhotos(galleryData);
 
-        // 2. Cargar artículos de blog de categoría "Historia"
-        // (Útil para biografías de directores o anécdotas)
         const { data: blogData } = await supabase
           .from("blog_posts")
           .select("*")
@@ -53,10 +46,7 @@ const Historia = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-outfit">
-      <Navbar />
-
-      {/* Header */}
+    <div className="bg-background text-foreground font-outfit">
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-black/60 z-10" />
         <img 
@@ -75,7 +65,6 @@ const Historia = () => {
         </div>
       </section>
 
-      {/* Los Fundadores (Sección Estática de Alto Valor) */}
       <section className="py-20 container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="font-playfair text-4xl font-bold mb-6">Los Cimientos</h2>
@@ -88,7 +77,6 @@ const Historia = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
           <div className="relative aspect-[3/4] bg-muted rounded-lg overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500">
-            {/* Si tienes una foto de Hubert u Olga, úsala aquí. Si no, usa una de la galería */}
             <img 
               src={historicalPhotos[0]?.image_url || "/placeholder.svg"} 
               alt="Fundadores" 
@@ -120,7 +108,6 @@ const Historia = () => {
 
       <Separator className="my-8 opacity-50" />
 
-      {/* La Sala (Información del Edificio) */}
       <section className="py-20 bg-theater-darker">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -157,7 +144,6 @@ const Historia = () => {
               </div>
             </div>
             <div className="order-1 lg:order-2">
-               {/* Usamos la segunda foto histórica encontrada o un placeholder */}
                <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl border-4 border-background/20">
                  <img 
                    src={historicalPhotos[1]?.image_url || "/placeholder.svg"} 
@@ -170,7 +156,6 @@ const Historia = () => {
         </div>
       </section>
 
-      {/* Relatos y Biografías (Dinámico desde Blog -> Categoría Historia) */}
       {historicalPosts.length > 0 && (
         <section className="py-20 container mx-auto px-4">
           <div className="text-center mb-12">
@@ -200,7 +185,6 @@ const Historia = () => {
                   <p className="text-muted-foreground text-sm line-clamp-4 leading-relaxed">
                     {post.excerpt}
                   </p>
-                  {/* Aquí podrías poner un botón/link para leer el artículo completo si creas la página de detalle de blog */}
                 </CardContent>
               </Card>
             ))}
@@ -208,7 +192,6 @@ const Historia = () => {
         </section>
       )}
 
-      {/* Galería Histórica (Dinámico desde Galería -> Categoría Historia) */}
       <section className="py-20 bg-muted/20">
         <div className="container mx-auto px-4">
           <h2 className="font-playfair text-4xl font-bold mb-10 text-center">Archivo Visual</h2>
@@ -248,11 +231,6 @@ const Historia = () => {
           )}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-theater-darker py-8 border-t border-border mt-auto text-center">
-        <p className="text-sm text-muted-foreground">© 2024 Compañía Hubert de Blanck.</p>
-      </footer>
     </div>
   );
 };
