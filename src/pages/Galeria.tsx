@@ -59,8 +59,8 @@ const Galeria = () => {
     if (selectedPlayAlbum) {
       return images.filter(img => img.play_id === selectedPlayAlbum);
     }
-    if (activeCategoryFilter === "Todos") return images;
-    return images.filter(img => img.category === activeCategoryFilter);
+    // Since category doesn't exist in DB, return all images for general view
+    return images;
   };
 
   const filteredImages = getFilteredImages();

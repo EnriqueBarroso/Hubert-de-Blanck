@@ -18,14 +18,14 @@ const Historia = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        // Fetch gallery images without category filter since column doesn't exist
         const { data: galleryData } = await supabase
           .from("gallery")
           .select("*")
-          .eq("category", "Historia")
           .order("created_at", { ascending: true })
           .limit(12);
         
-        if (galleryData) setHistoricalPhotos(galleryData);
+        if (galleryData) setHistoricalPhotos(galleryData as GalleryItem[]);
 
         const { data: blogData } = await supabase
           .from("blog_posts")

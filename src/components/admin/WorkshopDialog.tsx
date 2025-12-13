@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Workshop, WorkshopInsert, WorkshopUpdate } from "@/types";
 
 interface WorkshopDialogProps {
@@ -21,22 +21,18 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [featuresInput, setFeaturesInput] = useState("");
 
   const [formData, setFormData] = useState<WorkshopInsert>({
     title: "",
     description: "",
-    long_description: "",
     instructor: "",
-    instructor_bio: "",
     level: "Principiante",
     duration: "",
     schedule: "",
     max_students: 20,
-    enrolled: 0,
-    price: 0,
+    price: "0",
     image: "",
-    features: [],
+    category: "",
   });
 
   useEffect(() => {
@@ -44,36 +40,28 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
       setFormData({
         title: workshop.title,
         description: workshop.description,
-        long_description: workshop.long_description || "",
         instructor: workshop.instructor,
-        instructor_bio: workshop.instructor_bio || "",
-        level: workshop.level,
+        level: workshop.level || "Principiante",
         duration: workshop.duration || "",
         schedule: workshop.schedule || "",
-        max_students: workshop.max_students,
-        enrolled: workshop.enrolled,
-        price: workshop.price,
+        max_students: workshop.max_students || 20,
+        price: workshop.price || "0",
         image: workshop.image || "",
-        features: workshop.features || [],
+        category: workshop.category || "",
       });
-      setFeaturesInput(workshop.features ? workshop.features.join("\n") : "");
     } else {
       setFormData({
         title: "",
         description: "",
-        long_description: "",
         instructor: "",
-        instructor_bio: "",
         level: "Principiante",
         duration: "",
         schedule: "",
         max_students: 20,
-        enrolled: 0,
-        price: 0,
+        price: "0",
         image: "",
-        features: [],
+        category: "",
       });
-      setFeaturesInput("");
     }
   }, [workshop, open]);
 
@@ -87,13 +75,13 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
-        .from('workshop-images')
+        .from('play-images')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
-        .from('workshop-images')
+        .from('play-images')
         .getPublicUrl(fileName);
 
       setFormData(prev => ({ ...prev, image: data.publicUrl }));
@@ -109,22 +97,18 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
     e.preventDefault();
     setLoading(true);
 
-    // Convertir features de string (textarea) a array
-    const featuresArray = featuresInput.split("\n").filter(f => f.trim() !== "");
-    const dataToSubmit = { ...formData, features: featuresArray };
-
     try {
       if (workshop) {
         const { error } = await supabase
           .from("workshops")
-          .update(dataToSubmit as WorkshopUpdate)
+          .update(formData as WorkshopUpdate)
           .eq("id", workshop.id);
         if (error) throw error;
         toast({ title: "Taller actualizado" });
       } else {
         const { error } = await supabase
           .from("workshops")
-          .insert([dataToSubmit]);
+          .insert([formData]);
         if (error) throw error;
         toast({ title: "Taller creado" });
       }
@@ -151,7 +135,7 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
             </div>
             <div className="space-y-2">
               <Label>Nivel *</Label>
-              <Select value={formData.level} onValueChange={v => setFormData({...formData, level: v})}>
+              <Select value={formData.level || "Principiante"} onValueChange={v => setFormData({...formData, level: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Principiante">Principiante</SelectItem>
@@ -163,13 +147,8 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
           </div>
 
           <div className="space-y-2">
-            <Label>Descripción Corta *</Label>
-            <Input value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Descripción Detallada</Label>
-            <Textarea value={formData.long_description || ""} onChange={e => setFormData({...formData, long_description: e.target.value})} rows={3} />
+            <Label>Descripción *</Label>
+            <Textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required rows={3} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -178,8 +157,8 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
               <Input value={formData.instructor} onChange={e => setFormData({...formData, instructor: e.target.value})} required />
             </div>
             <div className="space-y-2">
-              <Label>Bio Instructor</Label>
-              <Input value={formData.instructor_bio || ""} onChange={e => setFormData({...formData, instructor_bio: e.target.value})} />
+              <Label>Categoría</Label>
+              <Input value={formData.category || ""} onChange={e => setFormData({...formData, category: e.target.value})} placeholder="Actuación, Voz, etc." />
             </div>
           </div>
 
@@ -193,30 +172,14 @@ const WorkshopDialog = ({ open, onOpenChange, workshop, onSuccess }: WorkshopDia
               <Input value={formData.schedule || ""} onChange={e => setFormData({...formData, schedule: e.target.value})} placeholder="Sábados 10am" />
             </div>
             <div className="space-y-2">
-              <Label>Precio ($)</Label>
-              <Input type="number" value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Cupo Máximo</Label>
-              <Input type="number" value={formData.max_students} onChange={e => setFormData({...formData, max_students: Number(e.target.value)})} />
-            </div>
-            <div className="space-y-2">
-              <Label>Inscritos Actuales</Label>
-              <Input type="number" value={formData.enrolled} onChange={e => setFormData({...formData, enrolled: Number(e.target.value)})} />
+              <Label>Precio</Label>
+              <Input value={formData.price || ""} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="$100" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Características (Una por línea)</Label>
-            <Textarea 
-              value={featuresInput} 
-              onChange={e => setFeaturesInput(e.target.value)} 
-              placeholder="Ej: Certificado incluido&#10;Material de estudio"
-              rows={4}
-            />
+            <Label>Cupo Máximo</Label>
+            <Input type="number" value={formData.max_students || 20} onChange={e => setFormData({...formData, max_students: Number(e.target.value)})} />
           </div>
 
           <div className="space-y-2">

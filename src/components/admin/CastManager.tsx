@@ -78,7 +78,7 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
         .insert({
           play_id: play.id,
           actor_id: selectedActorId,
-          character_name: characterName
+          role_in_play: characterName
         });
 
       if (error) throw error;
@@ -183,7 +183,7 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
                         <span className="font-medium">{item.actor?.name || "Actor desconocido"}</span>
                       </div>
                       <div className="col-span-5 text-muted-foreground">
-                        {item.character_name}
+                        {item.role_in_play}
                       </div>
                       <div className="col-span-2 text-right">
                         <Button 

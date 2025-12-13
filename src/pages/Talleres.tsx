@@ -203,14 +203,12 @@ const Talleres = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <Badge className={getLevelColor(workshop.level)}>
+                      <Badge className={getLevelColor(workshop.level || "")}>
                         {workshop.level}
                       </Badge>
-                      {workshop.enrolled >= workshop.max_students ? (
-                        <Badge variant="destructive" className="font-outfit">Cupo Lleno</Badge>
-                      ) : (
-                        <Badge variant="secondary" className="font-outfit">{workshop.enrolled}/{workshop.max_students} inscritos</Badge>
-                      )}
+                      <Badge variant="secondary" className="font-outfit">
+                        Máx. {workshop.max_students} estudiantes
+                      </Badge>
                     </div>
                   </div>
 
@@ -243,20 +241,6 @@ const Talleres = () => {
                       </div>
                     </div>
 
-                    {workshop.features && workshop.features.length > 0 && (
-                      <div className="border-t border-border pt-4">
-                        <h4 className="font-outfit text-sm font-semibold text-foreground mb-2">Lo que aprenderás:</h4>
-                        <ul className="space-y-1">
-                          {workshop.features.slice(0, 3).map((feature, index) => (
-                            <li key={index} className="flex items-start gap-2 text-sm font-outfit text-muted-foreground">
-                              <CheckCircle className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                              <span className="line-clamp-1">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
                     <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
                       <div>
                         <p className="font-outfit text-xs text-muted-foreground">Matrícula</p>
@@ -268,9 +252,8 @@ const Talleres = () => {
                           <Button
                             className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit"
                             onClick={() => setSelectedWorkshop(workshop)}
-                            disabled={workshop.enrolled >= workshop.max_students}
                           >
-                            {workshop.enrolled >= workshop.max_students ? "Lista de Espera" : "Inscribirse"}
+                            Inscribirse
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -285,7 +268,7 @@ const Talleres = () => {
                                 <GraduationCap className="h-4 w-4 text-primary" />
                                 <div>
                                   <p className="font-semibold">{workshop.instructor}</p>
-                                  <p className="text-xs text-muted-foreground line-clamp-1">{workshop.instructor_bio}</p>
+                                  <p className="text-xs text-muted-foreground line-clamp-1">{workshop.category || "Taller"}</p>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 text-sm font-outfit">
@@ -297,7 +280,7 @@ const Talleres = () => {
                               </div>
                             </div>
                             <p className="font-outfit text-sm text-muted-foreground">
-                              {workshop.long_description || workshop.description}
+                              {workshop.description}
                             </p>
                           </div>
 
