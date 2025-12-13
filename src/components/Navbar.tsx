@@ -154,7 +154,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-4 animate-fade-in border-t border-border/50 mt-4 bg-background">
+          <div className="md:hidden pt-4 pb-4 animate-slide-in-right border-t border-border/50 mt-4 bg-background">
             <div className="flex flex-col gap-1">
               <Link 
                 to="/" 
