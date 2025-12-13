@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Theater, User, Menu, X, ShieldCheck, LogIn, LogOut } from "lucide-react";
+import { User, Menu, X, ShieldCheck, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -104,10 +104,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
-              <Theater className="h-5 w-5" />
-            </Button>
-            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
