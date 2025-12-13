@@ -16,10 +16,17 @@ const Navbar = () => {
   const { toast } = useToast();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const closeMobileMenu = () => setMobileMenuOpen(false);
+  const closeMobileMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setMobileMenuOpen(false);
+      setIsClosing(false);
+    }, 200);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -145,7 +152,7 @@ const Navbar = () => {
               variant="ghost" 
               size="icon" 
               className="md:hidden text-foreground hover:text-primary"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => mobileMenuOpen ? closeMobileMenu() : setMobileMenuOpen(true)}
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -154,7 +161,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-4 animate-slide-in-right border-t border-border/50 mt-4 bg-background">
+          <div className={`md:hidden pt-4 pb-4 border-t border-border/50 mt-4 bg-background transition-all duration-200 ${isClosing ? 'animate-fade-out opacity-0' : 'animate-fade-in'}`}>
             <div className="flex flex-col gap-1">
               <Link 
                 to="/" 
