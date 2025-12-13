@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { GlobalSearch } from "./GlobalSearch";
 
 const Navbar = () => {
   const { toast } = useToast();
@@ -105,11 +104,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Buscador Global */}
-            <div className="hidden md:block">
-              <GlobalSearch />
-            </div>
-
             <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
               <Theater className="h-5 w-5" />
             </Button>
