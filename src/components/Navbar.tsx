@@ -31,10 +31,13 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
+      if (mobileMenuOpen && !isClosing) {
+        closeMobileMenu();
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mobileMenuOpen, isClosing]);
 
   useEffect(() => {
     checkAuth();
