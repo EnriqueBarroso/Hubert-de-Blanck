@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export function useFetch<T>(
-  tableName: string, 
+  tableName: "actors" | "plays" | "workshops" | "blog_posts" | "gallery" | "play_actors" | "user_roles", 
   options?: { 
     columns?: string; 
     orderBy?: string; 

@@ -30,36 +30,36 @@ const Hero = () => {
       {/* Contenido Fijo (Texto) */}
       <div className="absolute inset-0 z-20 flex flex-col justify-center items-start container mx-auto px-4">
         <div className="max-w-4xl animate-fade-in">
-          <p className="font-outfit text-sm font-medium text-secondary mb-4 tracking-widest uppercase flex items-center gap-2">
-            <span className="w-8 h-px bg-secondary"></span>
+          <p className="font-outfit text-xs sm:text-sm font-medium text-secondary mb-3 sm:mb-4 tracking-widest uppercase flex items-center gap-2">
+            <span className="w-6 sm:w-8 h-px bg-secondary"></span>
             Teatro Cubano
           </p>
           
-          <h1 className="font-playfair text-6xl md:text-8xl lg:text-9xl font-bold text-white mb-6 leading-none shadow-black drop-shadow-2xl">
+          <h1 className="font-playfair text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 leading-tight shadow-black drop-shadow-2xl">
             Compañía <br/> Hubert de Blanck
           </h1>
           
-          <div className="border-l-4 border-primary pl-6 mb-8">
-            <p className="font-outfit text-2xl md:text-3xl text-white/90 leading-relaxed italic font-light drop-shadow-md">
+          <div className="border-l-4 border-primary pl-4 sm:pl-6 mb-6 sm:mb-8">
+            <p className="font-outfit text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 leading-relaxed italic font-light drop-shadow-md">
               "El arte a favor del pensamiento"
             </p>
           </div>
           
-          <div className="flex gap-4">
-            <Link to="/cartelera">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <Link to="/cartelera" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit font-semibold rounded-full px-8 group shadow-lg shadow-primary/20"
+                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-outfit font-semibold rounded-full px-6 sm:px-8 py-6 sm:py-4 group shadow-lg shadow-primary/20 text-base"
               >
                 <Sparkles className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
                 Ver Cartelera
               </Button>
             </Link>
-            <Link to="/compania">
+            <Link to="/compania" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-black font-outfit font-semibold rounded-full px-8 transition-all"
+                className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-black font-outfit font-semibold rounded-full px-6 sm:px-8 py-6 sm:py-4 transition-all text-base"
               >
                 Conócenos
               </Button>

@@ -20,6 +20,8 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -72,8 +74,8 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="font-playfair text-2xl font-bold tracking-wide">
+          <Link to="/" className="flex items-center gap-3" onClick={closeMobileMenu}>
+            <div className="font-playfair text-xl md:text-2xl font-bold tracking-wide">
               <span className="text-primary">Hubert</span>
               <span className="text-foreground"> de </span>
               <span className="text-secondary">Blanck</span>
@@ -160,30 +162,50 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu - SIN ENLACE A GALERÍA */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-2 animate-fade-in">
-            <div className="flex flex-col gap-4">
-              <div className="mb-2">
-                <GlobalSearch />
-              </div>
-              
-              <Link to="/" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
+          <div className="md:hidden pt-4 pb-4 animate-fade-in border-t border-border/50 mt-4">
+            <div className="flex flex-col gap-1">
+              <Link 
+                to="/" 
+                onClick={closeMobileMenu}
+                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
+              >
                 Inicio
               </Link>
-              <Link to="/cartelera" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
+              <Link 
+                to="/cartelera" 
+                onClick={closeMobileMenu}
+                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
+              >
                 Cartelera
               </Link>
-              <Link to="/compania" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
+              <Link 
+                to="/compania" 
+                onClick={closeMobileMenu}
+                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
+              >
                 La Compañía
               </Link>
-              <Link to="/talleres" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
+              <Link 
+                to="/talleres" 
+                onClick={closeMobileMenu}
+                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
+              >
                 Talleres
               </Link>
-              <Link to="/blog" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
+              <Link 
+                to="/blog" 
+                onClick={closeMobileMenu}
+                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
+              >
                 Blog
               </Link>
-              <Link to="/contacto" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
+              <Link 
+                to="/contacto" 
+                onClick={closeMobileMenu}
+                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
+              >
                 Contacto
               </Link>
             </div>
