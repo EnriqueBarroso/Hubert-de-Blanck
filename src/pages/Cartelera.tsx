@@ -133,25 +133,25 @@ const Cartelera = () => {
   return (
     <>
       {/* Header */}
-      <section className="pt-32 pb-16 bg-gradient-to-b from-theater-darker to-background">
+      <section className="pt-24 sm:pt-32 pb-8 sm:pb-16 bg-gradient-to-b from-theater-darker to-background">
         <div className="container mx-auto px-4">
-          <h1 className="font-playfair text-6xl md:text-7xl font-bold text-foreground mb-6">
+          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 sm:mb-6">
             Cartelera
           </h1>
-          <p className="font-outfit text-lg text-muted-foreground max-w-2xl">
+          <p className="font-outfit text-base sm:text-lg text-muted-foreground max-w-2xl">
             Descubre nuestras próximas presentaciones y asegura tu lugar en las mejores producciones teatrales
           </p>
         </div>
       </section>
 
       {/* Filters and Calendar */}
-      <section className="py-12">
+      <section className="py-8 sm:py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Calendar Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-card rounded-lg p-6 border border-border sticky top-24">
-                <h3 className="font-playfair text-2xl font-bold text-foreground mb-4">
+            <div className="lg:col-span-1 order-2 lg:order-1">
+              <div className="bg-card rounded-lg p-4 sm:p-6 border border-border lg:sticky lg:top-24">
+                <h3 className="font-playfair text-xl sm:text-2xl font-bold text-foreground mb-4">
                   Selecciona una fecha
                 </h3>
                 <Calendar
@@ -193,14 +193,14 @@ const Cartelera = () => {
             </div>
 
             {/* Events List */}
-            <div className="lg:col-span-2">
-              <div className="mb-6 flex items-center justify-between">
-                <h3 className="font-playfair text-2xl font-bold text-foreground">
+            <div className="lg:col-span-2 order-1 lg:order-2">
+              <div className="mb-4 sm:mb-6 flex items-center justify-between">
+                <h3 className="font-playfair text-xl sm:text-2xl font-bold text-foreground">
                   {selectedDate
                     ? `Eventos disponibles`
                     : "Todos los eventos"}
                 </h3>
-                <Badge variant="outline" className="font-outfit">
+                <Badge variant="outline" className="font-outfit text-xs sm:text-sm">
                   {loading ? "..." : filteredEvents.length} evento(s)
                 </Badge>
               </div>
@@ -254,10 +254,10 @@ const Cartelera = () => {
                           </div>
                         </div>
 
-                        <div className="md:col-span-2 p-6 flex flex-col justify-between">
+                          <div className="md:col-span-2 p-4 sm:p-6 flex flex-col justify-between">
                           <div>
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-playfair text-3xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
+                              <h4 className="font-playfair text-xl sm:text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
                                 {event.title}
                               </h4>
                               {event.status === 'repertorio' && (
@@ -289,10 +289,10 @@ const Cartelera = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between mt-4 md:mt-0">
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-border md:border-0 md:pt-0">
                             <div>
-                              <p className="font-outfit text-sm text-muted-foreground">Entrada</p>
-                              <p className="font-playfair text-3xl font-bold text-foreground">
+                              <p className="font-outfit text-xs sm:text-sm text-muted-foreground">Entrada</p>
+                              <p className="font-playfair text-2xl sm:text-3xl font-bold text-foreground">
                                 ${event.price}
                               </p>
                             </div>

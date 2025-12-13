@@ -112,20 +112,20 @@ const Talleres = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 overflow-hidden">
+      <section className="relative pt-24 sm:pt-32 pb-8 sm:pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-theater-darker via-background to-background z-0" />
         <div className="absolute top-0 left-0 w-1/2 h-full bg-primary opacity-10 skew-x-12 transform -translate-x-1/4" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl">
-            <p className="font-outfit text-sm font-medium text-primary mb-4 tracking-widest uppercase flex items-center gap-2">
+            <p className="font-outfit text-xs sm:text-sm font-medium text-primary mb-3 sm:mb-4 tracking-widest uppercase flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               Formación Teatral
             </p>
-            <h1 className="font-playfair text-6xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 sm:mb-6 leading-tight">
               Talleres y Cursos
             </h1>
-            <p className="font-outfit text-xl text-muted-foreground leading-relaxed mb-8">
+            <p className="font-outfit text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
               Desarrolla tu talento con programas diseñados por profesionales reconocidos. 
               De principiante a avanzado, encuentra el camino perfecto para tu crecimiento artístico.
             </p>
@@ -134,9 +134,9 @@ const Talleres = () => {
       </section>
 
       {/* Filter Section */}
-      <section className="py-8 bg-theater-darker">
+      <section className="py-4 sm:py-8 bg-theater-darker">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <span className="font-outfit text-sm font-medium text-foreground">
               Filtrar por nivel:
             </span>
@@ -147,13 +147,13 @@ const Talleres = () => {
                   variant={selectedLevel === level ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedLevel(level)}
-                  className="font-outfit"
+                  className="font-outfit text-xs sm:text-sm px-3 py-2"
                 >
                   {level}
                 </Button>
               ))}
             </div>
-            <Badge variant="outline" className="ml-auto font-outfit">
+            <Badge variant="outline" className="sm:ml-auto font-outfit self-start sm:self-center">
               {loading ? "..." : filteredWorkshops.length} taller(es)
             </Badge>
           </div>
@@ -161,7 +161,7 @@ const Talleres = () => {
       </section>
 
       {/* Workshops Grid */}
-      <section className="py-20">
+      <section className="py-12 sm:py-20">
         <div className="container mx-auto px-4">
           {loading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
