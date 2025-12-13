@@ -33,7 +33,6 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
     id: "",
     title: "",
     author: "",
-    director: "", // <--- AQUÍ
     description: "",
     image: "",
     category: "",
@@ -47,12 +46,10 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
 
   useEffect(() => {
     if (play) {
-      // 2. AÑADIDO: cargar el director al editar
       setFormData({
         id: play.id,
         title: play.title,
         author: play.author,
-        director: play.director || "", // <--- AQUÍ
         description: play.description,
         image: play.image,
         category: play.category,
@@ -68,7 +65,6 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
         id: "",
         title: "",
         author: "",
-        director: "", // <--- AQUÍ
         description: "",
         image: "",
         category: "",
@@ -244,7 +240,7 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
             />
           </div>
 
-          {/* 3. MODIFICADO: Bloque con Autor, Director y Categoría */}
+          {/* Autor y Categoría */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="author">Autor *</Label>
@@ -256,28 +252,16 @@ const PlayDialog = ({ open, onOpenChange, play, onSuccess }: PlayDialogProps) =>
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="director">Director *</Label>
+              <Label htmlFor="category">Categoría *</Label>
               <Input
-                id="director"
-                value={formData.director || ""}
-                onChange={(e) => setFormData({ ...formData, director: e.target.value })}
-                placeholder="Nombre del director"
+                id="category"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 required
+                placeholder="Teatro, Musical..."
               />
             </div>
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="category">Categoría *</Label>
-            <Input
-              id="category"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              required
-              placeholder="Teatro, Musical..."
-            />
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Estado *</Label>

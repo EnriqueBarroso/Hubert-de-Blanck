@@ -94,7 +94,7 @@ const ImageViewer = ({ images, initialIndex, isOpen, onClose }: ImageViewerProps
             <div className="inline-block bg-black/70 backdrop-blur-sm px-6 py-3 rounded-full text-white pointer-events-auto">
               <h3 className="font-playfair text-xl font-bold">{currentImage?.title}</h3>
               <p className="font-outfit text-sm text-gray-300">
-                {currentImage?.category} {currentImage?.play ? `• ${currentImage.play.title}` : ""}
+                {currentImage?.play ? currentImage.play.title : currentImage?.description || ""}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {currentIndex + 1} / {images.length}

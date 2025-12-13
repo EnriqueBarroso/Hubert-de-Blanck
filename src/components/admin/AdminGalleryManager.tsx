@@ -35,7 +35,7 @@ const AdminGalleryManager = () => {
 
   // Formulario
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedPlayId, setSelectedPlayId] = useState<string>("none");
   const [file, setFile] = useState<File | null>(null);
 
@@ -71,10 +71,10 @@ const AdminGalleryManager = () => {
 
   const handleEdit = (item: GalleryItem) => {
     setEditingId(item.id);
-    setTitle(item.title);
-    setCategory(item.category);
+    setTitle(item.title || "");
+    setDescription(item.description || "");
     setSelectedPlayId(item.play_id || "none");
-    setFile(null); // Reseteamos el archivo, si no sube uno nuevo se mantiene el anterior
+    setFile(null);
     setDialogOpen(true);
   };
 
@@ -82,8 +82,8 @@ const AdminGalleryManager = () => {
     e.preventDefault();
     
     // Validaciones básicas
-    if (!title || !category) {
-      toast({ variant: "destructive", title: "Faltan datos", description: "El título y la categoría son obligatorios." });
+    if (!title) {
+      toast({ variant: "destructive", title: "Falta el título", description: "El título es obligatorio." });
       return;
     }
     // Si NO estamos editando, la imagen es obligatoria
@@ -117,7 +117,7 @@ const AdminGalleryManager = () => {
       // Preparamos los datos comunes
       const itemData = {
         title,
-        category,
+        description,
         play_id: selectedPlayId === "none" ? null : selectedPlayId,
       };
 
@@ -180,10 +180,10 @@ const AdminGalleryManager = () => {
 
   const resetForm = () => {
     setTitle("");
-    setCategory("");
+    setDescription("");
     setSelectedPlayId("none");
     setFile(null);
-    setEditingId(null); // Importante: resetear el ID de edición
+    setEditingId(null);
   };
 
   return (
@@ -211,17 +211,8 @@ const AdminGalleryManager = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Categoría *</Label>
-                  <Select value={category} onValueChange={setCategory} required>
-                    <SelectTrigger><SelectValue placeholder="Selecciona..." /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Espacios">Espacios</SelectItem>
-                      <SelectItem value="Ensayos">Ensayos</SelectItem>
-                      <SelectItem value="Funciones">Funciones</SelectItem>
-                      <SelectItem value="Historia">Historia</SelectItem>
-                      <SelectItem value="Backstage">Backstage</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>Descripción</Label>
+                  <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descripción de la imagen" />
                 </div>
 
                 <div className="space-y-2">
@@ -272,7 +263,7 @@ const AdminGalleryManager = () => {
                 {/* Overlay con acciones */}
                 <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-2 text-center cursor-default gap-2">
                   <p className="font-bold text-sm line-clamp-1">{img.title}</p>
-                  <p className="text-xs text-gray-300">{img.category}</p>
+                  <p className="text-xs text-gray-300">{img.description}</p>
                   {img.play && (
                     <span className="px-2 py-0.5 bg-primary/20 text-primary text-[10px] rounded-full border border-primary/30">
                       {img.play.title}

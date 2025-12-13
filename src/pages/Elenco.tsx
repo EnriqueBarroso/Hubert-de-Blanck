@@ -5,15 +5,16 @@ import ActorCard from "@/components/ActorCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users } from "lucide-react";
 
-// Definición de la interfaz del Actor
-interface Actor {
+// Use the database schema type directly
+type Actor = {
   id: string;
   name: string;
   role: string;
   bio: string;
   image: string;
-  time_period: string | null;
-}
+  created_at?: string | null;
+  updated_at?: string | null;
+};
 
 const Elenco = () => {
   const [actors, setActors] = useState<Actor[]>([]);
@@ -40,25 +41,8 @@ const Elenco = () => {
     }
   };
 
-  // Lógica de Agrupación por Periodo
-  const groupedActors = actors.reduce((groups, actor) => {
-    // Si no tiene periodo, lo ponemos en "Sin Clasificar" o "General"
-    const period = actor.time_period || "General";
-    
-    if (!groups[period]) {
-      groups[period] = [];
-    }
-    groups[period].push(actor);
-    return groups;
-  }, {} as Record<string, Actor[]>);
-
-  // Ordenar los periodos para mostrarlos
-  // "Actualidad" va primero, el resto se ordena como texto (descendente para años recientes primero)
-  const sortedPeriods = Object.keys(groupedActors).sort((a, b) => {
-    if (a === "Actualidad") return -1;
-    if (b === "Actualidad") return 1;
-    return b.localeCompare(a); 
-  });
+  // Display actors in a simple grid without period grouping (since time_period doesn't exist)
+  const sortedActors = [...actors].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,7 +58,6 @@ const Elenco = () => {
         </p>
       </section>
 
-      {/* Listado por Grupos */}
       <section className="py-16 px-4 container mx-auto">
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -83,34 +66,19 @@ const Elenco = () => {
             ))}
           </div>
         ) : (
-          <div className="space-y-16">
-            {sortedPeriods.map((period) => (
-              <div key={period} className="space-y-8 animate-fade-in">
-                {/* Título del Periodo */}
-                <div className="flex items-center gap-4">
-                  <div className="h-px bg-border flex-grow"></div>
-                  <h2 className="font-playfair text-2xl md:text-3xl font-bold text-primary px-6 py-2 border border-primary/20 rounded-full bg-primary/5 uppercase tracking-wider">
-                    {period}
-                  </h2>
-                  <div className="h-px bg-border flex-grow"></div>
-                </div>
-
-                {/* Grid de Actores */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {groupedActors[period].map((actor) => (
-                    <ActorCard
-                      key={actor.id}
-                      name={actor.name}
-                      role={actor.role}
-                      bio={actor.bio}
-                      image={actor.image}
-                      // Pasamos el periodo para que se muestre en la tarjeta
-                      timePeriod={actor.time_period || undefined} 
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="space-y-8 animate-fade-in">
+            {/* Grid de Actores */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {sortedActors.map((actor) => (
+                <ActorCard
+                  key={actor.id}
+                  name={actor.name}
+                  role={actor.role}
+                  bio={actor.bio}
+                  image={actor.image}
+                />
+              ))}
+            </div>
 
             {actors.length === 0 && (
               <div className="text-center py-20 border border-dashed border-border rounded-xl">

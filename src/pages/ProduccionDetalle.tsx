@@ -42,7 +42,7 @@ const ProduccionDetalle = () => {
         const { data: castData, error: castError } = await supabase
           .from("play_actors")
           .select(`
-            character_name,
+            role_in_play,
             actor:actors (id, name, bio, image)
           `)
           .eq("play_id", playData.id);
@@ -52,7 +52,7 @@ const ProduccionDetalle = () => {
         const formattedCast: CastMember[] = (castData || []).map((item: any) => ({
           id: item.actor.id,
           name: item.actor.name,
-          role: item.character_name,
+          role: item.role_in_play || "Personaje",
           bio: item.actor.bio,
           image: item.actor.image
         }));
@@ -141,19 +141,13 @@ const ProduccionDetalle = () => {
                 <span className="text-lg font-medium">{play.author}</span>
               </div>
               
-              {play.director && (
-                <div className="flex items-center gap-2">
-                  <Megaphone className="h-5 w-5 text-primary" />
-                  <span className="text-lg font-medium">Dir. {play.director}</span>
-                </div>
-              )}
-
               {play.year && (
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
                   <span className="text-lg">{play.year}</span>
                 </div>
               )}
+
             </div>
           </div>
         </div>
