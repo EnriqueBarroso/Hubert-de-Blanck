@@ -4,14 +4,13 @@ import { Database } from "@/integrations/supabase/types";
 export type Play = Database['public']['Tables']['plays']['Row'];
 export type Actor = Database['public']['Tables']['actors']['Row'];
 
-// GalleryItem coincide con la tabla gallery de la base de datos
+// 🔴 CORRECCIÓN AQUÍ: Definimos GalleryItem manualmente para asegurar que tenga image_url
 export type GalleryItem = {
   id: string;
   created_at: string;
-  updated_at: string;
   title: string | null;
-  description: string | null;
-  image_url: string;
+  image_url: string;       // ✅ Ahora coincide con tu Base de Datos
+  category: string | null; // ✅ Ahora coincide con tu Base de Datos
   play_id: string | null;
   play?: Play | null;
 };
