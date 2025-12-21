@@ -20,13 +20,14 @@ const Compania = () => {
       try {
         const { data } = await supabase
           .from("gallery")
-          .select("image_url")
+          // CORRECCIÓN: Pedimos 'image_url' Y 'category'
+          .select("image_url, category") 
           .or("category.eq.Equipo,category.eq.Ensayos")
           .order("created_at", { ascending: false })
           .limit(1)
-          .maybeSingle();
+          .maybeSingle() as any; // 'as any' es vital para evitar errores de TypeScript
 
-        if (data) {
+        if (data && data.image_url) {
           setTeamPhotoUrl(data.image_url);
         }
       } catch (error) {

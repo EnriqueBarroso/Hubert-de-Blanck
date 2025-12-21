@@ -31,7 +31,7 @@ export type BlogPost = {
   title: string;
   excerpt: string;
   content: string;
-  image: string | null;
+  image_url?: string | null;
   author: string;
   category: string | null;
   published_at: string;

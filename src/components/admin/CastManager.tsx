@@ -6,9 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, UserPlus, Users } from "lucide-react";
-import { Actor, Play, PlayActor } from "@/types";
+import { Actor, Play } from "@/types"; // Simplificamos importaciones
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Definimos un tipo local para evitar conflictos si tus types globales no están actualizados aún
+interface PlayActorLocal {
+  id: string;
+  play_id: string;
+  actor_id: string;
+  character_name: string; // <--- El nombre correcto
+  actor: {
+    name: string;
+    image?: string | null;
+    image_url?: string | null;
+  };
+}
 
 interface CastManagerProps {
   play: Play;
@@ -18,13 +31,13 @@ interface CastManagerProps {
 
 const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
   const { toast } = useToast();
-  const [cast, setCast] = useState<PlayActor[]>([]);
+  const [cast, setCast] = useState<PlayActorLocal[]>([]);
   const [allActors, setAllActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Formulario para añadir
   const [selectedActorId, setSelectedActorId] = useState<string>("");
-  const [characterName, setCharacterName] = useState<string>("");
+  const [characterNameInput, setCharacterNameInput] = useState<string>("");
 
   useEffect(() => {
     if (open && play) {
@@ -44,9 +57,6 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
       setAllActors(actorsData || []);
 
       // 2. Obtener el elenco actual de esta obra
-      // CORRECCIÓN AQUÍ: Separamos la consulta para evitar el error de "deep instantiation"
-      // Usamos un cast explícito (as unknown as PlayActor[]) para decirle a TS qué estructura esperar
-      // y evitar que intente inferirla recursivamente.
       const { data: castData, error } = await supabase
         .from("play_actors")
         .select(`
@@ -57,9 +67,19 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
 
       if (error) throw error;
       
-      // Asignamos directamente usando el cast seguro
-      // TypeScript confiará en que 'castData' cumple con la estructura PlayActor[]
-      setCast((castData as unknown) as PlayActor[]);
+      // Mapeamos los datos asegurando que 'character_name' se use
+      const safeCast: PlayActorLocal[] = (castData || []).map((item: any) => ({
+        id: item.id,
+        play_id: item.play_id,
+        actor_id: item.actor_id,
+        character_name: item.character_name, // <--- LEEMOS LA COLUMNA CORRECTA
+        actor: {
+          name: item.actor.name,
+          image: item.actor.image_url || item.actor.image // Compatibilidad R2
+        }
+      }));
+
+      setCast(safeCast);
 
     } catch (error) {
       console.error("Error cargando elenco:", error);
@@ -70,7 +90,7 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
   };
 
   const handleAddActor = async () => {
-    if (!selectedActorId || !characterName) return;
+    if (!selectedActorId || !characterNameInput) return;
 
     try {
       const { error } = await supabase
@@ -78,7 +98,7 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
         .insert({
           play_id: play.id,
           actor_id: selectedActorId,
-          role_in_play: characterName
+          character_name: characterNameInput // <--- INSERTAMOS EN LA COLUMNA CORRECTA
         });
 
       if (error) throw error;
@@ -87,10 +107,15 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
       
       // Limpiar y recargar
       setSelectedActorId("");
-      setCharacterName("");
+      setCharacterNameInput("");
       fetchData();
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "No se pudo añadir el actor" });
+    } catch (error: any) {
+      console.error("Error insertando:", error);
+      toast({ 
+        variant: "destructive", 
+        title: "Error al añadir", 
+        description: error.message || "Verifica los permisos de la base de datos." 
+      });
     }
   };
 
@@ -144,12 +169,12 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
             <div className="flex-1 w-full space-y-2">
               <Label>Personaje</Label>
               <Input 
-                value={characterName} 
-                onChange={(e) => setCharacterName(e.target.value)}
+                value={characterNameInput} 
+                onChange={(e) => setCharacterNameInput(e.target.value)}
                 placeholder="Ej: Romeo, La Poncia..." 
               />
             </div>
-            <Button onClick={handleAddActor} disabled={!selectedActorId || !characterName}>
+            <Button onClick={handleAddActor} disabled={!selectedActorId || !characterNameInput}>
               <UserPlus className="mr-2 h-4 w-4" /> Añadir
             </Button>
           </div>
@@ -183,7 +208,8 @@ const CastManager = ({ play, open, onOpenChange }: CastManagerProps) => {
                         <span className="font-medium">{item.actor?.name || "Actor desconocido"}</span>
                       </div>
                       <div className="col-span-5 text-muted-foreground">
-                        {item.role_in_play}
+                        {/* Aquí mostramos la columna correcta */}
+                        {item.character_name}
                       </div>
                       <div className="col-span-2 text-right">
                         <Button 
