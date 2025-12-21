@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { User, Menu, X, ShieldCheck, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +14,27 @@ import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
   const { toast } = useToast();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const isActive = (path: string) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
+
+  const linkClasses = (path: string) =>
+    `font-outfit text-sm font-medium transition-colors uppercase tracking-wide ${
+      isActive(path) ? "text-primary" : "text-foreground hover:text-primary"
+    }`;
+
+  const mobileLinkClasses = (path: string) =>
+    `font-outfit text-base font-medium transition-colors uppercase tracking-wide py-3 px-2 rounded-lg ${
+      isActive(path) ? "text-primary bg-primary/10" : "text-foreground hover:text-primary hover:bg-primary/10"
+    }`;
 
   const closeMobileMenu = () => {
     setIsClosing(true);
@@ -91,26 +107,14 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Menu - SIN ENLACE A GALERÍA */}
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              Inicio
-            </Link>
-            <Link to="/cartelera" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              Cartelera
-            </Link>
-            <Link to="/compania" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              La Compañía
-            </Link>
-            <Link to="/talleres" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              Talleres
-            </Link>
-            <Link to="/blog" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              Blog
-            </Link>
-            <Link to="/contacto" className="font-outfit text-sm font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wide">
-              Contacto
-            </Link>
+            <Link to="/" className={linkClasses("/")}>Inicio</Link>
+            <Link to="/cartelera" className={linkClasses("/cartelera")}>Cartelera</Link>
+            <Link to="/compania" className={linkClasses("/compania")}>La Compañía</Link>
+            <Link to="/talleres" className={linkClasses("/talleres")}>Talleres</Link>
+            <Link to="/blog" className={linkClasses("/blog")}>Blog</Link>
+            <Link to="/contacto" className={linkClasses("/contacto")}>Contacto</Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -166,48 +170,12 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className={`md:hidden pt-4 pb-4 border-t border-border/50 mt-4 bg-background transition-all duration-200 ${isClosing ? 'animate-fade-out opacity-0' : 'animate-fade-in'}`}>
             <div className="flex flex-col gap-1">
-              <Link 
-                to="/" 
-                onClick={closeMobileMenu}
-                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
-              >
-                Inicio
-              </Link>
-              <Link 
-                to="/cartelera" 
-                onClick={closeMobileMenu}
-                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
-              >
-                Cartelera
-              </Link>
-              <Link 
-                to="/compania" 
-                onClick={closeMobileMenu}
-                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
-              >
-                La Compañía
-              </Link>
-              <Link 
-                to="/talleres" 
-                onClick={closeMobileMenu}
-                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
-              >
-                Talleres
-              </Link>
-              <Link 
-                to="/blog" 
-                onClick={closeMobileMenu}
-                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
-              >
-                Blog
-              </Link>
-              <Link 
-                to="/contacto" 
-                onClick={closeMobileMenu}
-                className="font-outfit text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide py-3 px-2 rounded-lg"
-              >
-                Contacto
-              </Link>
+              <Link to="/" onClick={closeMobileMenu} className={mobileLinkClasses("/")}>Inicio</Link>
+              <Link to="/cartelera" onClick={closeMobileMenu} className={mobileLinkClasses("/cartelera")}>Cartelera</Link>
+              <Link to="/compania" onClick={closeMobileMenu} className={mobileLinkClasses("/compania")}>La Compañía</Link>
+              <Link to="/talleres" onClick={closeMobileMenu} className={mobileLinkClasses("/talleres")}>Talleres</Link>
+              <Link to="/blog" onClick={closeMobileMenu} className={mobileLinkClasses("/blog")}>Blog</Link>
+              <Link to="/contacto" onClick={closeMobileMenu} className={mobileLinkClasses("/contacto")}>Contacto</Link>
             </div>
           </div>
         )}
