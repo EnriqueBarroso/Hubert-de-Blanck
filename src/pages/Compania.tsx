@@ -15,19 +15,18 @@ import theaterInterior from "@/assets/theater-interior.jpg";
 const Compania = () => {
   const [teamPhotoUrl, setTeamPhotoUrl] = useState<string>(teamPhoto);
 
- useEffect(() => {
+  useEffect(() => {
     const fetchTeamPhoto = async () => {
       try {
-        // AÑADIDO: 'as any' al final de la cadena para saltarse el chequeo estricto de TypeScript
         const { data } = await supabase
           .from("gallery")
-          .select("image_url, category")
+          .select("image_url")
           .or("category.eq.Equipo,category.eq.Ensayos")
           .order("created_at", { ascending: false })
           .limit(1)
-          .maybeSingle() as any; 
+          .maybeSingle();
 
-        if (data && data.image_url) {
+        if (data) {
           setTeamPhotoUrl(data.image_url);
         }
       } catch (error) {
@@ -139,7 +138,7 @@ const Compania = () => {
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-theater-darker via-background to-background z-0" />
         <div className="absolute top-0 right-0 w-1/2 h-full bg-primary opacity-10 -skew-x-12 transform translate-x-1/4" />
-
+        
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl">
             <p className="font-outfit text-sm font-medium text-primary mb-4 tracking-widest uppercase flex items-center gap-2">
@@ -246,7 +245,7 @@ const Compania = () => {
               </h2>
               <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8" />
             </div>
-
+            
             <div className="space-y-8 font-outfit text-lg text-muted-foreground leading-relaxed text-justify md:px-8">
               <p>
                 La <strong className="text-foreground">Compañía Teatral Hubert de Blanck</strong> ocupa un lugar privilegiado en la historia de las artes escénicas de Cuba. Fundada oficialmente en <strong className="text-foreground">1991</strong>, nuestra agrupación nació como una derivación natural y evolutiva del legendario grupo <strong>Teatro Estudio</strong>, herederos de una tradición de rigor artístico y compromiso social que marcó el siglo XX cubano.
@@ -259,13 +258,13 @@ const Compania = () => {
               </p>
             </div>
             <div className="pt-8 text-center">
-              <Link to="/historia">
-                <Button size="lg" variant="default" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
-                  <BookOpen className="mr-2 h-5 w-5" />
-                  Explorar Nuestra Historia Completa
-                </Button>
-              </Link>
-            </div>
+            <Link to="/historia">
+              <Button size="lg" variant="default" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
+                <BookOpen className="mr-2 h-5 w-5" />
+                Explorar Nuestra Historia Completa
+              </Button>
+            </Link>
+          </div>
           </div>
         </div>
       </section>
@@ -286,8 +285,9 @@ const Compania = () => {
             {milestones.map((milestone, index) => (
               <div
                 key={index}
-                className={`flex flex-col lg:flex-row gap-8 items-center ${index % 2 === 1 ? "lg:flex-row-reverse" : ""
-                  }`}
+                className={`flex flex-col lg:flex-row gap-8 items-center ${
+                  index % 2 === 1 ? "lg:flex-row-reverse" : ""
+                }`}
               >
                 <div className="lg:w-1/2">
                   <div className="relative overflow-hidden rounded-lg aspect-video border border-border/50 shadow-xl">
