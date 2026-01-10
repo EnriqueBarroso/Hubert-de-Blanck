@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon, Clock, MapPin, Ticket, Users, AlertCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Ticket, Users, AlertCircle, Sparkles } from "lucide-react";
 import { format, isValid, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -221,18 +221,62 @@ const Cartelera = () => {
                     </div>
                   ))
                 ) : filteredEvents.length === 0 ? (
-                  <div className="text-center py-12 border border-dashed border-border rounded-lg">
-                    <CalendarIcon className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                    <p className="font-outfit text-muted-foreground text-lg">
-                      No hay eventos programados con estos filtros.
-                    </p>
-                    <Button
-                      variant="link"
-                      onClick={() => { setSelectedDate(undefined); setFilterType("Todos") }}
-                      className="mt-2 text-primary"
-                    >
-                      Ver todos los eventos
-                    </Button>
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-theater-darker border border-border">
+                    {/* Decorative elements */}
+                    <div className="absolute top-0 left-0 w-full h-full">
+                      <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+                      <div className="absolute bottom-10 right-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
+                    </div>
+                    
+                    <div className="relative z-10 py-16 sm:py-24 px-6 sm:px-12 text-center">
+                      {/* Icon with animation */}
+                      <div className="relative inline-block mb-8">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                        <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 p-6 rounded-full border border-primary/30">
+                          <Sparkles className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
+                        </div>
+                      </div>
+                      
+                      {/* Main heading */}
+                      <h2 className="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
+                        Próximamente
+                      </h2>
+                      
+                      {/* Decorative line */}
+                      <div className="flex items-center justify-center gap-3 mb-6">
+                        <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary/50" />
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+                        <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary/50" />
+                      </div>
+                      
+                      {/* Description */}
+                      <p className="font-outfit text-muted-foreground text-lg sm:text-xl max-w-md mx-auto mb-8 leading-relaxed">
+                        Estamos preparando nuevas experiencias teatrales para ti. 
+                        <span className="text-foreground font-medium"> ¡Muy pronto revelaremos nuestra próxima temporada!</span>
+                      </p>
+                      
+                      {/* Info cards */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+                        <div className="bg-background/50 backdrop-blur-sm rounded-xl p-4 border border-border/50">
+                          <CalendarIcon className="h-6 w-6 text-primary mx-auto mb-2" />
+                          <p className="font-outfit text-sm text-muted-foreground">Nuevas fechas</p>
+                        </div>
+                        <div className="bg-background/50 backdrop-blur-sm rounded-xl p-4 border border-border/50">
+                          <Ticket className="h-6 w-6 text-secondary mx-auto mb-2" />
+                          <p className="font-outfit text-sm text-muted-foreground">Obras exclusivas</p>
+                        </div>
+                        <div className="bg-background/50 backdrop-blur-sm rounded-xl p-4 border border-border/50">
+                          <Users className="h-6 w-6 text-accent mx-auto mb-2" />
+                          <p className="font-outfit text-sm text-muted-foreground">Elenco estelar</p>
+                        </div>
+                      </div>
+                      
+                      {/* CTA */}
+                      <p className="font-outfit text-sm text-muted-foreground/70">
+                        Síguenos en redes sociales para enterarte primero
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   filteredEvents.map((event) => (
