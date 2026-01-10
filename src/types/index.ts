@@ -26,17 +26,7 @@ export type PlayActor = Database['public']['Tables']['play_actors']['Row'] & {
 };
 export type PlayActorInsert = Database['public']['Tables']['play_actors']['Insert'];
 
-export type BlogPost = {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  image_url?: string | null;
-  author: string;
-  category: string | null;
-  published_at: string;
-  created_at: string;
-};
-
-export type BlogPostInsert = Omit<BlogPost, 'id' | 'created_at' | 'published_at'>;
-export type BlogPostUpdate = Partial<BlogPostInsert>;
+// Tipos para Blog Posts (usando tipos generados de Supabase)
+export type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
+export type BlogPostInsert = Database['public']['Tables']['blog_posts']['Insert'];
+export type BlogPostUpdate = Database['public']['Tables']['blog_posts']['Update'];
