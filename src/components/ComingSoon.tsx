@@ -2,44 +2,42 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, ArrowRight } from "lucide-react";
 
-const Cartelera = () => {
+interface ComingSoonProps {
+  minHeight?: string; // Para ajustar altura si es página completa o sección
+}
+
+const ComingSoon = ({ minHeight = "min-h-[60vh]" }: ComingSoonProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden pt-20">
+    <div className={`w-full ${minHeight} flex items-center justify-center bg-background relative overflow-hidden py-20`}>
       
-      {/* Elementos decorativos de fondo (luces sutiles) */}
+      {/* Luces sutiles */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl -z-10" />
 
       <div className="container mx-auto px-4 text-center z-10">
-        
-        {/* Ícono elegante */}
-        <div className="inline-flex items-center justify-center p-3 mb-8 rounded-full bg-primary/10 border border-primary/20 animate-fade-in">
+        <div className="inline-flex items-center justify-center p-3 mb-6 rounded-full bg-primary/10 border border-primary/20 animate-fade-in">
           <Sparkles className="h-6 w-6 text-primary" />
         </div>
 
-        {/* Título Principal */}
-        <h1 className="font-playfair text-6xl md:text-8xl font-bold text-foreground mb-4 tracking-tight drop-shadow-sm animate-fade-in">
+        <h2 className="font-playfair text-5xl md:text-7xl font-bold text-foreground mb-4 tracking-tight drop-shadow-sm animate-fade-in">
           Próximamente
-        </h1>
+        </h2>
 
-        {/* Línea divisoria elegante */}
-        <div className="w-32 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 opacity-70" />
+        <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6 opacity-70" />
 
-        {/* Subtítulo / Mensaje */}
-        <p className="font-outfit text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12 animate-fade-in delay-100">
+        <p className="font-outfit text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10 animate-fade-in delay-100">
           El telón se está preparando para levantarse de nuevo.<br />
           Estamos ultimando los detalles de nuestra próxima temporada.
         </p>
 
-        {/* Botones de acción */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in delay-200">
           <Link to="/producciones">
             <Button 
               variant="default" 
               size="lg" 
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit px-8 py-6 text-lg rounded-full shadow-lg transition-transform hover:scale-105"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-outfit px-8 rounded-full shadow-lg transition-transform hover:scale-105"
             >
-              Explorar nuestro Repertorio
+              Ver Repertorio
             </Button>
           </Link>
           
@@ -49,7 +47,7 @@ const Cartelera = () => {
               size="lg" 
               className="font-outfit text-muted-foreground hover:text-foreground group"
             >
-              Contactar con la compañía
+              Contactar
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
@@ -59,4 +57,4 @@ const Cartelera = () => {
   );
 };
 
-export default Cartelera;
+export default ComingSoon;

@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Hero from "@/components/Hero";
 import EventCard from "@/components/EventCard";
 import BlogCard from "@/components/BlogCard";
+import ComingSoon from "@/components/ComingSoon"; // 👈 Importamos el nuevo componente
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,33 +75,39 @@ const Index = () => {
 
   return (
     <>
-      {/* Hero se mantiene porque es contenido específico de la Home */}
       <Hero />
 
-      {/* 1. SECCIÓN CARTELERA */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-96 bg-primary -skew-y-12 transform translate-y-32 opacity-20 z-0" />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="mb-12 text-center">
-            <h2 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
-              Próximas Funciones
-            </h2>
-            <p className="font-outfit text-lg text-muted-foreground max-w-2xl mx-auto">
-              Descubre las experiencias teatrales que están transformando nuestra escena
-            </p>
-          </div>
+      {/* 1. SECCIÓN CARTELERA INTELIGENTE */}
+      {/* LÓGICA: 
+          - Si ya cargó Y no hay eventos -> Muestra ComingSoon
+          - Si está cargando O hay eventos -> Muestra la sección estándar 
+      */}
+      {!loading && upcomingEvents.length === 0 ? (
+        <ComingSoon minHeight="min-h-[60vh]" />
+      ) : (
+        <section className="relative py-20 overflow-hidden">
+          {/* Fondo decorativo */}
+          <div className="absolute top-0 right-0 w-1/2 h-96 bg-primary -skew-y-12 transform translate-y-32 opacity-20 z-0" />
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="mb-12 text-center">
+              <h2 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
+                Próximas Funciones
+              </h2>
+              <p className="font-outfit text-lg text-muted-foreground max-w-2xl mx-auto">
+                Descubre las experiencias teatrales que están transformando nuestra escena
+              </p>
+            </div>
 
-          {loading ? (
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-               {[1, 2, 3].map((i) => (
-                 <Skeleton key={i} className="aspect-[4/3] w-full rounded-lg" />
-               ))}
-             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              {upcomingEvents.length > 0 ? (
-                upcomingEvents.map((event) => (
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="aspect-[4/3] w-full rounded-lg" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                {upcomingEvents.map((event) => (
                   <EventCard 
                     key={event.id}
                     title={event.title}
@@ -112,30 +119,24 @@ const Index = () => {
                       event.category.toLowerCase().includes("taller") ? "workshop" : "contemporary"
                     }
                   />
-                ))
-              ) : (
-                <div className="col-span-3 text-center py-12 border border-dashed border-border rounded-lg">
-                  <p className="text-muted-foreground font-outfit">
-                    No hay funciones programadas en cartelera en este momento.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
 
-          <div className="text-center">
-            <Link to="/cartelera">
-              <Button 
-                size="lg"
-                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
-              >
-                Ver cartelera completa
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="text-center">
+              <Link to="/cartelera">
+                <Button 
+                  size="lg"
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-outfit font-bold rounded-full px-8"
+                >
+                  Ver cartelera completa
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 2. SECCIÓN LA COMPAÑÍA */}
       <section className="relative py-20 bg-theater-darker overflow-hidden">
