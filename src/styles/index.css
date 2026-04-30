@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #f2ebda;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+  ::selection {
+    background-color: #b8253a;
+    color: #f2ebda;
+  }
+}
+
+@layer components {
+  /* Separador tipo "━━ SECCIÓN ━━━" del sistema de diseño */
+  .section-rule {
+    @apply font-mono text-[11px] tracking-widest text-carmin;
+  }
+  .section-rule::before {
+    content: '━━ ';
+  }
+  .section-rule::after {
+    content: ' ━━━━━━━━━━━━━━━━';
+  }
+
+  /* Card neo-brutalista base */
+  .card-brut {
+    @apply bg-paper-2 border-2 border-ink shadow-brut;
+  }
+
+  /* Etiqueta tipo "tag" con borde sólido */
+  .tag-brut {
+    @apply inline-block px-2.5 py-1 text-[11px] tracking-widest border-[1.5px] border-ink font-semibold;
+  }
+
+  /* Input con borde sólido cuando tiene contenido */
+  .input-brut {
+    @apply bg-paper border-[1.5px] border-ink px-3.5 py-2.5 text-sm text-ink w-full focus:outline-none focus:shadow-brut-sm transition-shadow;
+  }
+
+  /* Input vacío con borde discontinuo */
+  .input-brut-empty {
+    @apply bg-paper border-[1.5px] border-dashed border-ink px-3.5 py-2.5 text-sm italic opacity-50;
+  }
+
+  /* Botón principal — fondo tinta con sombra carmín */
+  .btn-brut {
+    @apply inline-block bg-ink text-paper px-6 py-3 font-bold text-[13px] tracking-widest border-2 border-ink shadow-brut-carmin hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_0_#B8253A] transition-all;
+  }
+
+  /* Botón secundario — fondo claro */
+  .btn-brut-light {
+    @apply inline-block bg-paper-2 text-ink px-4 py-2 font-semibold text-[11px] tracking-widest border-[1.5px] border-ink hover:shadow-brut-sm transition-shadow;
+  }
+}
+
+/* Rotaciones sutiles reutilizables */
+.tilt-1 { transform: rotate(-0.8deg); }
+.tilt-2 { transform: rotate(0.6deg); }
+.tilt-3 { transform: rotate(-0.4deg); }
+.tilt-4 { transform: rotate(1.2deg); }
+.tilt-5 { transform: rotate(-1.5deg); }
