@@ -33,9 +33,26 @@ export default function Header() {
           <Link
             to="/"
             onClick={cerrarMenu}
-            className="font-serif text-lg sm:text-2xl font-bold text-ink leading-none tracking-tight no-underline"
+            className="flex items-center gap-3 group no-underline"
           >
-            [ {COMPANIA.nombre} ]
+            {/* El Logo Gráfico — Ahora sin fondo propio */}
+            <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12">
+              <img
+                src="/logo_transparent.png"
+                alt="Logo Hubert de Blanck"
+                className="h-full w-full object-contain"
+              />
+            </div>
+
+            {/* El Nombre */}
+            <div className="flex flex-col justify-center">
+              <h1 className="font-serif text-lg sm:text-2xl font-bold leading-[0.8] text-ink group-hover:text-carmin transition-colors uppercase m-0">
+                Hubert de Blanck
+              </h1>
+              <span className="font-mono text-[8px] sm:text-[9px] tracking-[0.2em] uppercase opacity-50 mt-1">
+                Compañía Teatral
+              </span>
+            </div>
           </Link>
 
           {/* Nav desktop */}
@@ -98,8 +115,7 @@ export default function Header() {
                   to={item.to}
                   onClick={cerrarMenu}
                   className={({ isActive }) =>
-                    `py-3 border-b border-dashed border-ink font-serif text-2xl ${
-                      isActive ? 'text-carmin' : 'text-ink'
+                    `py-3 border-b border-dashed border-ink font-serif text-2xl ${isActive ? 'text-carmin' : 'text-ink'
                     }`
                   }
                 >
