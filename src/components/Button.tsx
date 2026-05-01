@@ -9,10 +9,10 @@ interface BaseProps {
   className?: string;
 }
 
-interface ButtonProps extends BaseProps, Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+type ButtonProps = BaseProps & Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> & {
   to?: never;
   href?: never;
-}
+};
 
 interface LinkProps extends BaseProps {
   to: string;
@@ -59,7 +59,7 @@ export default function Button(props: Props) {
     );
   }
 
-  const { variant: _v, children: _c, className: _cl, ...buttonProps } = props as ButtonProps;
+  const { variant: _v, children: _c, className: _cl, to: _t, href: _h, ...buttonProps } = props as ButtonProps;
   return (
     <button className={combined} {...buttonProps}>
       {children}
