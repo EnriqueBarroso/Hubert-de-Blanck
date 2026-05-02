@@ -17,10 +17,18 @@ interface ProduccionConReparto extends Produccion {
   director: Pick<Profile, 'nombre' | 'slug'> | null;
 }
 
+// NUEVO: Interfaz para el equipo creativo
+interface EquipoCreativo {
+  id: string;
+  rol: string;
+  profile: Pick<Profile, 'id' | 'nombre' | 'slug'> | null;
+}
+
 export default function ObraDetalle() {
   const { slug } = useParams<{ slug: string }>();
   const [obra, setObra] = useState<Obra | null>(null);
   const [director, setDirector] = useState<Profile | null>(null);
+  const [equipoCreativo, setEquipoCreativo] = useState<EquipoCreativo[]>([]); // Nuevo estado
   const [producciones, setProducciones] = useState<ProduccionConReparto[]>([]);
   const [fotos, setFotos] = useState<ObraFoto[]>([]);
   const [videos, setVideos] = useState<ObraVideo[]>([]);
@@ -55,6 +63,15 @@ export default function ObraDetalle() {
         .maybeSingle();
       if (dirData) setDirector(dirData);
     }
+
+    // NUEVO: Cargar el equipo creativo de la obra
+    const { data: equipoData } = await supabase
+      .from('equipo_creativo')
+      .select('id, rol, profile:profiles(id, nombre, slug)')
+      .eq('obra_id', obraData.id)
+      .order('orden');
+    
+    if (equipoData) setEquipoCreativo(equipoData as unknown as EquipoCreativo[]);
 
     // Producciones con reparto y director específico
     const { data: prodData } = await supabase
@@ -136,14 +153,34 @@ export default function ObraDetalle() {
 
               {/* Ficha técnica como programa de mano */}
               <div className="border-y-2 border-ink py-4 grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-x-4 gap-y-2.5 sm:gap-y-2.5 text-sm">
+                
+                {/* Director General */}
                 {director && (
                   <>
-                    <span className="font-mono text-[10px] opacity-60 tracking-wider uppercase sm:self-center">Dirección</span>
+                    <span className="font-mono text-[10px] opacity-60 tracking-wider uppercase sm:self-center">Dir. General</span>
                     <Link to={`/equipo/${director.slug}`} className="font-semibold text-ink no-underline hover:text-carmin">
                       {director.nombre}
                     </Link>
                   </>
                 )}
+
+                {/* Resto del Equipo Creativo */}
+                {equipoCreativo.map((miembro) => (
+                  <div key={miembro.id} className="contents">
+                    <span className="font-mono text-[10px] opacity-60 tracking-wider uppercase sm:self-center mt-2 sm:mt-0">
+                      {miembro.rol}
+                    </span>
+                    {miembro.profile ? (
+                      <Link to={`/equipo/${miembro.profile.slug}`} className="font-semibold text-ink no-underline hover:text-carmin">
+                        {miembro.profile.nombre}
+                      </Link>
+                    ) : (
+                      <span className="text-ink/60 italic">—</span>
+                    )}
+                  </div>
+                ))}
+
+                {/* Datos técnicos */}
                 {obra.duracion_minutos && (
                   <>
                     <span className="font-mono text-[10px] opacity-60 tracking-wider uppercase sm:self-center mt-2 sm:mt-0">Duración</span>
