@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import Home from './pages/Home';
 import Obras from './pages/Obras';
 import ObraDetalle from './pages/ObraDetalle';
@@ -13,6 +14,8 @@ import NoEncontrado from './pages/NoEncontrado';
 
 export default function App() {
   return (
+    <>
+    <PWAInstallPrompt />
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
@@ -27,5 +30,6 @@ export default function App() {
         <Route path="*" element={<NoEncontrado />} />
       </Route>
     </Routes>
+    </>
   );
 }
