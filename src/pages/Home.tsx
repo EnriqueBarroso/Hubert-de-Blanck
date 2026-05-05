@@ -44,7 +44,10 @@ export default function Home() {
       <SEO />
 
       {/* HERO — obra en cartel */}
-      <section className="px-6 py-12 sm:py-16">
+      <section className="relative px-6 py-12 sm:py-16 overflow-hidden">
+        <span className="pointer-events-none select-none absolute -bottom-6 -right-4 font-mono font-bold text-[22vw] leading-none text-ink opacity-[0.05]">
+          2026
+        </span>
         <div className="max-w-6xl mx-auto">
           <SectionRule className="mb-3">En escena</SectionRule>
 
