@@ -233,13 +233,7 @@ export default function ObraDetalle() {
             <SectionRule className="mb-6">Producciones</SectionRule>
             <div className="space-y-4">
               {producciones.map((prod, i) => (
-                <Card key={prod.id} tilt={i % 2 === 0 ? -0.3 : 0.3} className="overflow-hidden">
-                  {prod.foto_portada_url && (
-                    <div className="aspect-[16/9] border-b-2 border-ink">
-                      <img src={prod.foto_portada_url} alt={prod.temporada} className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="p-6">
+                <Card key={prod.id} tilt={i % 2 === 0 ? -0.3 : 0.3} className="p-6">
                   <div className="flex justify-between items-baseline mb-4 pb-3 border-b border-dashed border-ink">
                     <div>
                       <p className="font-mono text-[10px] tracking-wider opacity-70">Nº {String(i + 1).padStart(2, '0')}</p>
@@ -278,7 +272,6 @@ export default function ObraDetalle() {
                       </div>
                     </>
                   )}
-                  </div>
                 </Card>
               ))}
             </div>

@@ -37,11 +37,14 @@ function construirApariciones(obras: ObraConProducciones[]): [string, Aparicion[
     const quinqueniosObra = new Map<string, { anio: number; tipo: 'estreno' | 'reposicion'; foto: string | null; produccionEstado: EstadoObra | null }>();
 
     if (obra.anio_estreno) {
-      quinqueniosObra.set(getPeriodoLabel(obra.anio_estreno), {
+      const estrenoPeriodo = getPeriodoLabel(obra.anio_estreno);
+      // Busca la producción del mismo quinquenio para usar su imagen propia.
+      const prodEstreno = obra.producciones.find(p => getPeriodoLabel(p.anio) === estrenoPeriodo);
+      quinqueniosObra.set(estrenoPeriodo, {
         anio: obra.anio_estreno,
         tipo: 'estreno',
-        foto: null,
-        produccionEstado: null,
+        foto: prodEstreno?.foto_portada_url ?? null,
+        produccionEstado: prodEstreno?.estado ?? null,
       });
     }
 
