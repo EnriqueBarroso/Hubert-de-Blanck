@@ -34,6 +34,7 @@ export default function ObraDetalle() {
   const [videos, setVideos] = useState<ObraVideo[]>([]);
   const [cargando, setCargando] = useState(true);
   const [noEncontrada, setNoEncontrada] = useState(false);
+  const [fotoAmpliada, setFotoAmpliada] = useState<ObraFoto | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -286,17 +287,39 @@ export default function ObraDetalle() {
             <SectionRule className="mb-6">Galería</SectionRule>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {fotos.map((foto, i) => (
-                <div
+                <button
                   key={foto.id}
-                  className="aspect-square bg-ink border-2 border-ink shadow-brut-carmin overflow-hidden"
+                  onClick={() => setFotoAmpliada(foto)}
+                  className="aspect-square bg-ink border-2 border-ink shadow-brut-carmin overflow-hidden cursor-zoom-in focus:outline-none"
                   style={{ transform: `rotate(${i % 2 === 0 ? -0.5 : 0.5}deg)` }}
                 >
                   <img src={foto.url} alt={foto.pie ?? ''} className="w-full h-full object-cover" />
-                </div>
+                </button>
               ))}
             </div>
           </div>
         </section>
+      )}
+
+      {/* Lightbox */}
+      {fotoAmpliada && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/90 cursor-zoom-out p-4"
+          onClick={() => setFotoAmpliada(null)}
+        >
+          <div className="relative max-w-5xl w-full">
+            <img
+              src={fotoAmpliada.url}
+              alt={fotoAmpliada.pie ?? ''}
+              className="w-full max-h-[90vh] object-contain border-2 border-paper shadow-[0_0_0_1px_#B8253A]"
+            />
+            {fotoAmpliada.pie && (
+              <p className="font-serif italic text-paper/70 text-sm mt-3 text-center">
+                {fotoAmpliada.pie}
+              </p>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Videos */}
