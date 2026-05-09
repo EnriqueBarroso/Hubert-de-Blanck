@@ -5,8 +5,8 @@ export default {
     extend: {
       colors: {
         // Sistema de tokens — neo-brutalismo teatral azul/carmín
-        paper: '#E8F2FF',      // fondo principal — azul muy claro
-        'paper-2': '#F2F8FF',  // cards — azul casi blanco
+        paper: '#F2EBDA',      // fondo principal — papel crema
+        'paper-2': '#FFFCF0',  // cards — papel más claro
         ink: '#0F1738',        // tinta principal — azul casi negro
         'ink-soft': '#4A5470', // tinta secundaria para metadatos
         carmin: '#B8253A',     // acento — rojo carmín
