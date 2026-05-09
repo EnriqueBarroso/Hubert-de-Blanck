@@ -6,12 +6,12 @@ import Card from '../components/Card';
 import Tag from '../components/Tag';
 import { supabase } from '../lib/supabase';
 import { ESTADO_LABELS } from '../lib/constants';
-import type { Obra } from '../types/database';
+import type { Obra, EstadoObra } from '../types/database';
 
 type Vista = 'grid' | 'lista';
 
 type ObraConProducciones = Obra & {
-  producciones: { anio: number; temporada: string; foto_portada_url: string | null }[];
+  producciones: { anio: number; temporada: string; foto_portada_url: string | null; estado: EstadoObra }[];
 };
 
 interface Aparicion {
@@ -19,6 +19,7 @@ interface Aparicion {
   anio: number;
   tipo: 'estreno' | 'reposicion';
   foto: string | null;
+  produccionEstado: EstadoObra | null;
 }
 
 function getPeriodoLabel(anio: number): string {
@@ -33,13 +34,14 @@ function construirApariciones(obras: ObraConProducciones[]): [string, Aparicion[
   for (const obra of obras) {
     // Reúne todos los quinquenios en los que esta obra estuvo activa.
     // La premiere tiene prioridad si cae en el mismo quinquenio que una producción.
-    const quinqueniosObra = new Map<string, { anio: number; tipo: 'estreno' | 'reposicion'; foto: string | null }>();
+    const quinqueniosObra = new Map<string, { anio: number; tipo: 'estreno' | 'reposicion'; foto: string | null; produccionEstado: EstadoObra | null }>();
 
     if (obra.anio_estreno) {
       quinqueniosObra.set(getPeriodoLabel(obra.anio_estreno), {
         anio: obra.anio_estreno,
         tipo: 'estreno',
         foto: null,
+        produccionEstado: null,
       });
     }
 
@@ -49,13 +51,24 @@ function construirApariciones(obras: ObraConProducciones[]): [string, Aparicion[
       if (!prod.anio) continue;
       const periodo = getPeriodoLabel(prod.anio);
       if (!quinqueniosObra.has(periodo)) {
-        quinqueniosObra.set(periodo, { anio: prod.anio, tipo: 'reposicion', foto: prod.foto_portada_url ?? null });
+        quinqueniosObra.set(periodo, {
+          anio: prod.anio,
+          tipo: 'reposicion',
+          foto: prod.foto_portada_url ?? null,
+          produccionEstado: prod.estado,
+        });
       }
     }
 
     for (const [periodo, info] of quinqueniosObra) {
       if (!grupos.has(periodo)) grupos.set(periodo, new Map());
-      grupos.get(periodo)!.set(obra.id, { obra, anio: info.anio, tipo: info.tipo, foto: info.foto });
+      grupos.get(periodo)!.set(obra.id, {
+        obra,
+        anio: info.anio,
+        tipo: info.tipo,
+        foto: info.foto,
+        produccionEstado: info.produccionEstado,
+      });
     }
   }
 
@@ -86,7 +99,7 @@ export default function Obras() {
   async function cargar() {
     const { data } = await supabase
       .from('obras')
-      .select('*, producciones(anio, temporada, foto_portada_url)')
+      .select('*, producciones(anio, temporada, foto_portada_url, estado)')
       .order('anio_estreno', { ascending: false });
     if (data) setObras(data as ObraConProducciones[]);
     setCargando(false);
@@ -146,7 +159,13 @@ export default function Obras() {
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {apariciones.map((ap) => {
                       const i = indiceGlobal.get(ap.obra.id)!;
-                      const destacada = ap.tipo === 'estreno' && ap.obra.estado === 'en_cartel';
+                      // Una reposición es destacada si su producción específica está en cartel.
+                      // Un estreno es destacada si la obra está en cartel pero no hay ninguna
+                      // reposición activa que ya se encargue de mostrarlo.
+                      const tieneReposicionActiva = ap.obra.producciones.some(p => p.estado === 'en_cartel');
+                      const destacada = ap.tipo === 'reposicion'
+                        ? ap.produccionEstado === 'en_cartel'
+                        : ap.obra.estado === 'en_cartel' && !tieneReposicionActiva;
                       return (
                         <Link
                           to={`/obras/${ap.obra.slug}`}
@@ -159,7 +178,7 @@ export default function Obras() {
                                 <img
                                   src={(ap.foto ?? ap.obra.foto_portada_url)!}
                                   alt={ap.obra.titulo}
-                                  className={`w-full h-full object-cover ${ap.tipo === 'reposicion' ? 'opacity-60' : ''}`}
+                                  className={`w-full h-full object-cover ${ap.tipo === 'reposicion' && !destacada ? 'opacity-60' : ''}`}
                                 />
                               ) : (
                                 'FOTO'
