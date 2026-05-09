@@ -120,6 +120,7 @@ export default function AdminObras() {
         director_id: null,
         estado: 'archivada',
         notas: null,
+        foto_portada_url: null,
       },
     });
     setError(null);
@@ -272,6 +273,13 @@ export default function AdminObras() {
                               key={prod.id}
                               className="flex items-center gap-3 px-3 py-2 border border-dashed border-ink"
                             >
+                              <div className="w-10 h-12 bg-ink/10 border border-ink/20 overflow-hidden flex-shrink-0">
+                                {prod.foto_portada_url ? (
+                                  <img src={prod.foto_portada_url} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-ink/20 text-[8px]">—</div>
+                                )}
+                              </div>
                               <div className="flex-1">
                                 <div className="font-serif font-bold text-ink">{prod.temporada}</div>
                                 <div className="font-mono text-[10px] text-ink/50">
@@ -376,6 +384,13 @@ export default function AdminObras() {
       {prodEditando && (
         <Modal abierto={!!prodEditando} onCerrar={() => setProdEditando(null)} titulo={prodEditando.prod.id ? 'Editar producción' : 'Nueva producción'} maxAncho="sm">
           <form onSubmit={guardarProd} className="space-y-4">
+            <ImageUpload
+              valor={prodEditando.prod.foto_portada_url ?? null}
+              onCambio={(url) => actualizarProd('foto_portada_url', url)}
+              carpeta="obras"
+              aspecto="paisaje"
+              label="Cartel de la temporada"
+            />
             <FormField label="Temporada / nombre" requerido>
               <input type="text" value={prodEditando.prod.temporada ?? ''} onChange={(e) => actualizarProd('temporada', e.target.value)} className="input-brut" placeholder="Temporada 2024" required />
             </FormField>

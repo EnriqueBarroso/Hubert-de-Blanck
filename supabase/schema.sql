@@ -98,6 +98,7 @@ CREATE TABLE public.producciones (
   anio INTEGER NOT NULL,
   director_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   notas TEXT,
+  foto_portada_url TEXT,
   estado TEXT NOT NULL CHECK (estado IN ('en_cartel', 'archivada', 'planificada')) DEFAULT 'archivada',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

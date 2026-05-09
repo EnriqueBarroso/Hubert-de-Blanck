@@ -11,13 +11,14 @@ import type { Obra } from '../types/database';
 type Vista = 'grid' | 'lista';
 
 type ObraConProducciones = Obra & {
-  producciones: { anio: number; temporada: string }[];
+  producciones: { anio: number; temporada: string; foto_portada_url: string | null }[];
 };
 
 interface Aparicion {
   obra: ObraConProducciones;
   anio: number;
   tipo: 'estreno' | 'reposicion';
+  foto: string | null;
 }
 
 function getPeriodoLabel(anio: number): string {
@@ -32,12 +33,13 @@ function construirApariciones(obras: ObraConProducciones[]): [string, Aparicion[
   for (const obra of obras) {
     // Reúne todos los quinquenios en los que esta obra estuvo activa.
     // La premiere tiene prioridad si cae en el mismo quinquenio que una producción.
-    const quinqueniosObra = new Map<string, { anio: number; tipo: 'estreno' | 'reposicion' }>();
+    const quinqueniosObra = new Map<string, { anio: number; tipo: 'estreno' | 'reposicion'; foto: string | null }>();
 
     if (obra.anio_estreno) {
       quinqueniosObra.set(getPeriodoLabel(obra.anio_estreno), {
         anio: obra.anio_estreno,
         tipo: 'estreno',
+        foto: null,
       });
     }
 
@@ -47,13 +49,13 @@ function construirApariciones(obras: ObraConProducciones[]): [string, Aparicion[
       if (!prod.anio) continue;
       const periodo = getPeriodoLabel(prod.anio);
       if (!quinqueniosObra.has(periodo)) {
-        quinqueniosObra.set(periodo, { anio: prod.anio, tipo: 'reposicion' });
+        quinqueniosObra.set(periodo, { anio: prod.anio, tipo: 'reposicion', foto: prod.foto_portada_url ?? null });
       }
     }
 
     for (const [periodo, info] of quinqueniosObra) {
       if (!grupos.has(periodo)) grupos.set(periodo, new Map());
-      grupos.get(periodo)!.set(obra.id, { obra, ...info });
+      grupos.get(periodo)!.set(obra.id, { obra, anio: info.anio, tipo: info.tipo, foto: info.foto });
     }
   }
 
@@ -84,7 +86,7 @@ export default function Obras() {
   async function cargar() {
     const { data } = await supabase
       .from('obras')
-      .select('*, producciones(anio, temporada)')
+      .select('*, producciones(anio, temporada, foto_portada_url)')
       .order('anio_estreno', { ascending: false });
     if (data) setObras(data as ObraConProducciones[]);
     setCargando(false);
@@ -153,9 +155,9 @@ export default function Obras() {
                         >
                           <Card tilt={tilts[i % tilts.length]} className="overflow-hidden hover:shadow-brut-lg transition-shadow h-full">
                             <div className={`bg-ink border-b-2 border-ink flex items-center justify-center text-paper/40 font-mono text-xs tracking-widest ${destacada ? 'aspect-[16/9]' : 'aspect-[4/3]'}`}>
-                              {ap.obra.foto_portada_url ? (
+                              {(ap.foto ?? ap.obra.foto_portada_url) ? (
                                 <img
-                                  src={ap.obra.foto_portada_url}
+                                  src={(ap.foto ?? ap.obra.foto_portada_url)!}
                                   alt={ap.obra.titulo}
                                   className={`w-full h-full object-cover ${ap.tipo === 'reposicion' ? 'opacity-60' : ''}`}
                                 />

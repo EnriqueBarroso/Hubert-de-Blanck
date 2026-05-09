@@ -49,6 +49,7 @@ export interface Produccion {
   anio: number;
   director_id: string | null;
   notas: string | null;
+  foto_portada_url: string | null;
   estado: EstadoObra;
   created_at: string;
 }
