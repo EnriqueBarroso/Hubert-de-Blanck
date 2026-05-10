@@ -48,6 +48,14 @@ export default function ImageUpload({
 
     setSubiendo(true);
 
+    // Refresh the session before uploading to avoid expired JWT errors
+    const { error: errSesion } = await supabase.auth.refreshSession();
+    if (errSesion) {
+      setError('Tu sesión expiró. Por favor, vuelve a iniciar sesión.');
+      setSubiendo(false);
+      return;
+    }
+
     const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
     const nombreLimpio = `${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
